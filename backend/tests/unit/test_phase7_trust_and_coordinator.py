@@ -149,3 +149,4 @@ async def test_payment_coordinator_guidance_and_boundaries():
         # Advisory disclaimer must be present
         assert "not hold escrow" in data["advisory_disclaimer"].lower()
         assert len(data["milestones"]) == 3
+
