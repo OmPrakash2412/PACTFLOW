@@ -50,6 +50,19 @@ class EvidenceInspectorAgent:
         clean_desc = sanitize_input(deliverable_description)
         clean_notes = sanitize_input(notes or "")
 
+        # Prompt Injection Neutralization
+        injection_patterns = [
+            r"ignore\s+(all\s+)?(previous\s+)?instructions",
+            r"disregard\s+(all\s+)?(previous\s+)?instructions",
+            r"system\s+override",
+            r"mark\s+(all\s+)?satisfied",
+            r"bypass\s+(all\s+)?verification",
+            r"you\s+are\s+now\s+in\s+developer\s+mode",
+            r"override\s+rules"
+        ]
+        combined_text = f"{clean_desc} {clean_notes}".lower()
+        injection_detected = any(re.search(pat, combined_text) for pat in injection_patterns)
+
         criteria_list_str = "\n".join([f"- {c}" for c in milestone_criteria])
         files_str = "\n".join([f"- {f}" for f in file_urls]) if file_urls else "None provided"
 
@@ -78,6 +91,11 @@ Return valid JSON adhering to VerificationReportStructure.
                     prompt=prompt,
                     response_schema=VerificationReportStructure
                 )
+                if injection_detected:
+                    result.recommendations.insert(
+                        0,
+                        "SECURITY ADVISORY: Attempted prompt injection detected in submission metadata. Perform mandatory manual review."
+                    )
                 return result
             except Exception as e:
                 logger.warning(f"Gemini Evidence Inspector call failed ({e}), using analytical evaluator.")
@@ -90,6 +108,11 @@ Return valid JSON adhering to VerificationReportStructure.
         missing_evidence: List[str] = []
         recommendations: List[str] = []
 
+        if injection_detected:
+            recommendations.append(
+                "SECURITY ADVISORY: Attempted prompt injection pattern detected and neutralized. Manual client code review required."
+            )
+
         has_files = bool(file_urls)
         has_demo = bool(demo_url)
         has_test_mention = "test" in clean_desc.lower() or "test" in clean_notes.lower()
@@ -99,7 +122,7 @@ Return valid JSON adhering to VerificationReportStructure.
             
             # Rule: dynamic / server / test requirements need more than a screenshot
             if any(term in crit_lower for term in ["test", "passing", "coverage", "benchmark"]):
-                if has_test_mention and (has_files or has_demo):
+                if has_test_mention and (has_files or has_demo) and not injection_detected:
                     verdict: VerdictType = "satisfied"
                     ref = f"Verified test execution mentioned in submission notes and corroborated by attached build artifacts."
                     conf = 0.92
@@ -111,7 +134,7 @@ Return valid JSON adhering to VerificationReportStructure.
                     uncertain.append(crit)
                     missing_evidence.append(f"Automated test runner output for criterion: '{crit}'")
             elif any(term in crit_lower for term in ["url", "deploy", "staging", "endpoint", "ui", "responsive"]):
-                if has_demo:
+                if has_demo and not injection_detected:
                     verdict = "satisfied"
                     ref = f"Confirmed public demo link accessible at {demo_url}"
                     conf = 0.95
@@ -129,7 +152,7 @@ Return valid JSON adhering to VerificationReportStructure.
                     missing.append(crit)
                     missing_evidence.append(f"Live preview or staging link for: '{crit}'")
             elif any(term in crit_lower for term in ["schema", "migration", "code", "repo", "architecture"]):
-                if has_files or ("git" in clean_notes.lower() or "http" in clean_notes.lower()):
+                if (has_files or ("git" in clean_notes.lower() or "http" in clean_notes.lower())) and not injection_detected:
                     verdict = "satisfied"
                     ref = "Code artifacts and repository references identified in submission."
                     conf = 0.94
@@ -141,14 +164,14 @@ Return valid JSON adhering to VerificationReportStructure.
                     uncertain.append(crit)
                     missing_evidence.append(f"Direct code diff or SQL schema file for: '{crit}'")
             else:
-                if has_files or has_demo or len(clean_desc) > 30:
+                if (has_files or has_demo or len(clean_desc) > 30) and not injection_detected:
                     verdict = "satisfied"
                     ref = "Addressed comprehensively in deliverable documentation."
                     conf = 0.88
                     satisfied.append(crit)
                 else:
                     verdict = "uncertain"
-                    ref = "Insufficient detail in deliverable description."
+                    ref = "Insufficient detail or unverified claims in deliverable description."
                     conf = 0.50
                     uncertain.append(crit)
 
@@ -161,8 +184,11 @@ Return valid JSON adhering to VerificationReportStructure.
                 )
             )
 
-        if missing:
-            overall: VerdictType = "missing"
+        if injection_detected:
+            overall: VerdictType = "uncertain"
+            conf_score = 40.0
+        elif missing:
+            overall = "missing"
             conf_score = 45.0
             recommendations.append("Request freelancer provide the missing evidence before approving milestone.")
         elif uncertain:
@@ -174,9 +200,10 @@ Return valid JSON adhering to VerificationReportStructure.
             conf_score = 96.0
             recommendations.append("All agreed criteria satisfied. Deliverable is ready for client review and approval.")
 
+        flag_str = " [FLAGGED: Prompt Injection Neutralized]" if injection_detected else ""
         summary = (
             f"Evaluated {len(milestone_criteria)} criteria for '{clean_title}': "
-            f"{len(satisfied)} satisfied, {len(uncertain)} uncertain, {len(missing)} missing. "
+            f"{len(satisfied)} satisfied, {len(uncertain)} uncertain, {len(missing)} missing.{flag_str} "
             f"Overall verdict: {overall} (confidence {conf_score:.1f}%)."
         )
 
@@ -194,4 +221,3 @@ Return valid JSON adhering to VerificationReportStructure.
 
 
 evidence_inspector = EvidenceInspectorAgent()
-

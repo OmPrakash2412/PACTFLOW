@@ -44,6 +44,6 @@ class VerificationReportResponse(BaseModel):
 
 class ClientApprovalRequest(BaseModel):
     milestone_id: str
-    action: Literal["approve", "request_revisions"]
+    action: Literal["approve", "request_revisions", "request_revision", "reject"]
     feedback: Optional[str] = None
 
