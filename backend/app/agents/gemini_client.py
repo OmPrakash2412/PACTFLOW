@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import logging
 from typing import Optional, Type, TypeVar
@@ -18,7 +19,7 @@ class GeminiClient:
         self._initialize_client()
 
     def _initialize_client(self):
-        if self._api_key:
+        if self._api_key and self._api_key not in ("your_gemini_api_key", "mock", "test", "dummy"):
             try:
                 from google import genai
                 self._client = genai.Client(api_key=self._api_key)
@@ -28,7 +29,9 @@ class GeminiClient:
 
     @property
     def is_configured(self) -> bool:
-        return bool(self._api_key and self._client)
+        if "pytest" in sys.modules and not os.environ.get("RUN_LIVE_GEMINI"):
+            return False
+        return bool(self._api_key and self._api_key not in ("your_gemini_api_key", "mock", "test", "dummy") and self._client)
 
     async def generate_structured(
         self,
@@ -59,9 +62,7 @@ class GeminiClient:
             except Exception as e:
                 logger.error(f"Gemini API generation error: {e}. Falling back to rule-based parser.")
 
-        # Raise or return validated schema depending on caller
         raise RuntimeError("Gemini Client not connected or call failed.")
 
 
 gemini_client = GeminiClient()
-
