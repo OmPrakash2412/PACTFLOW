@@ -7,7 +7,54 @@ from app.database.store import db_store
 
 
 @pytest.mark.asyncio
+async def test_unauthorized_invoice_creation_rejection():
+    """
+    SECURITY TEST: Proves that invoices CANNOT be generated unless the milestone
+    is in 'approved' or 'invoiced' state. Unapproved deliverables are strictly rejected.
+    """
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # Create a pending unapproved milestone
+        proj_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+        m_unapproved_id = f"m-unapproved-{uuid.uuid4().hex[:8]}"
+        db_store.milestones[m_unapproved_id] = {
+            "id": m_unapproved_id,
+            "project_id": proj_id,
+            "agreement_id": None,
+            "sequence_order": 99,
+            "title": "Unapproved Milestone Test",
+            "description": "Should reject invoicing",
+            "amount": Decimal("1000.00"),
+            "currency": "USD",
+            "status": "pending",
+            "acceptance_criteria": ["Criteria 1"],
+            "created_at": "2026-11-05T00:00:00Z",
+            "updated_at": "2026-11-05T00:00:00Z"
+        }
+
+        # Attempt to invoice unapproved milestone
+        resp = await client.post("/api/invoices/generate", json={"milestone_id": m_unapproved_id})
+        assert resp.status_code == 400
+        assert "Cannot invoice milestone in 'pending' state" in resp.json()["detail"]
+
+        # Attempt to invoice non-existent milestone
+        bad_resp = await client.post("/api/invoices/generate", json={"milestone_id": "non-existent-ms"})
+        assert bad_resp.status_code == 404
+
+
+@pytest.mark.asyncio
 async def test_full_sandbox_payment_lifecycle():
+    """
+    CRITICAL INTEGRATION TEST: Proves the complete end-to-end PayPal Sandbox lifecycle:
+    1. Milestone approval check
+    2. PayPal Invoicing v2 draft creation
+    3. Invoice dispatch & hosted URL capture
+    4. Authoritative webhook receipt & signature verification
+    5. Webhook idempotency test with duplicate delivery
+    6. Payment persistence in payments table
+    7. Milestone transition to 'paid'
+    8. Trust Ledger SHA-256 cryptographic chain continuity
+    """
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         # Step 1: Check existing seeded approved milestone m2
@@ -86,4 +133,3 @@ async def test_full_sandbox_payment_lifecycle():
         trust_status = verify_resp.json()
         assert trust_status["is_valid"] is True
         assert trust_status["tamper_detected"] is False
-
