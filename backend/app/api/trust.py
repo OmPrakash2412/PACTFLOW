@@ -9,6 +9,27 @@ from .deps import get_current_user
 router = APIRouter(prefix="/trust", tags=["Trust Ledger"])
 
 
+@router.get("/health", response_model=TrustVerificationStatus)
+async def verify_global_ledger_chain(current_user: dict = Depends(get_current_user)):
+    """
+    Verifies all recorded trust events across the entire platform.
+    """
+    events = db_store.get_trust_events()
+    is_valid = db_store.verify_ledger()
+
+    latest_hash = events[-1]["current_hash"] if events else GENESIS_HASH
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    return TrustVerificationStatus(
+        total_events=len(events),
+        is_valid=is_valid,
+        genesis_hash=GENESIS_HASH,
+        latest_hash=latest_hash,
+        verified_at=now_iso,
+        tamper_detected=not is_valid
+    )
+
+
 @router.get("/events/{project_id}", response_model=List[TrustEventResponse])
 async def get_project_trust_ledger(project_id: str, current_user: dict = Depends(get_current_user)):
     events = db_store.get_trust_events(project_id=project_id)
@@ -55,4 +76,3 @@ async def verify_project_ledger_chain(project_id: str, current_user: dict = Depe
         verified_at=now_iso,
         tamper_detected=not is_valid
     )
-

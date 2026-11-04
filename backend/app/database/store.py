@@ -368,7 +368,8 @@ class InMemoryDataStore:
         """
         self._seq += 1
         now_ts = self._now_iso()
-        prev_hash = self.trust_events[-1]["current_hash"] if self.trust_events else GENESIS_HASH
+        proj_events = [e for e in self.trust_events if e.get("project_id") == project_id]
+        prev_hash = proj_events[-1]["current_hash"] if proj_events else GENESIS_HASH
 
         canonical_body = {
             "project_id": str(project_id),
@@ -382,7 +383,7 @@ class InMemoryDataStore:
 
         event = {
             "id": str(uuid.uuid4()),
-            "sequence_number": self._seq,
+            "sequence_number": len(proj_events) + 1,
             "project_id": project_id,
             "event_type": event_type,
             "actor_id": actor_id,
@@ -396,13 +397,12 @@ class InMemoryDataStore:
         return event
 
     def get_trust_events(self, project_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        events = self.trust_events
         if project_id:
-            events = [e for e in events if e.get("project_id") == project_id]
-        return copy.deepcopy(events)
+            return copy.deepcopy([e for e in self.trust_events if e.get("project_id") == project_id])
+        return copy.deepcopy(self.trust_events)
 
     def verify_ledger(self, project_id: Optional[str] = None) -> bool:
-        events = self.get_trust_events(project_id=project_id) if not project_id else self.trust_events
+        events = self.get_trust_events(project_id=project_id)
         return verify_chain(events)
 
 

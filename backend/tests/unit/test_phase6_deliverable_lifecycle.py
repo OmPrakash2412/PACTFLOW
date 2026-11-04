@@ -187,3 +187,4 @@ async def test_phase6_full_deliverable_revision_and_approval_cycle():
         trust_res = await client.get(f"/api/trust/verify/{proj_id}", headers=c_headers)
         assert trust_res.status_code == 200
         assert trust_res.json()["is_valid"] is True
+
