@@ -16,3 +16,4 @@ def test_cors_origins_configuration():
     origins = settings.cors_origins
     assert isinstance(origins, list)
     assert any("localhost:3000" in o for o in origins)
+

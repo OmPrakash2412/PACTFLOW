@@ -43,3 +43,4 @@ def validate_environment() -> Tuple[bool, List[str], List[str]]:
 
     is_valid = len(errors) == 0
     return is_valid, warnings, errors
+

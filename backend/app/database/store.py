@@ -36,10 +36,12 @@ class InMemoryDataStore:
         freelancer_id = "22222222-2222-4222-8222-222222222222"
         admin_id = "33333333-3333-4333-8333-333333333333"
 
+        seed_hash = "$2b$10$J6j7Bd.wQZ1JJnlixocnVOyN5AlCxgLxEqQ4wxCtIa4Ik.WQyc86m"  # 'password123'
+
         self.profiles[client_id] = {
             "id": client_id,
             "email": "client@pactflow.io",
-            "password_hash": "$2b$12$e80yq9g6i3mXQ2B2QyLzUe7u7vX/8d1w8rKzZ3G1N8R2v8kF2P1Y2",  # 'password123'
+            "password_hash": seed_hash,
             "full_name": "Sophia Vance",
             "role": "client",
             "paypal_email": "sb-svance-client@business.example.com",
@@ -51,7 +53,7 @@ class InMemoryDataStore:
         self.profiles[freelancer_id] = {
             "id": freelancer_id,
             "email": "freelancer@pactflow.io",
-            "password_hash": "$2b$12$e80yq9g6i3mXQ2B2QyLzUe7u7vX/8d1w8rKzZ3G1N8R2v8kF2P1Y2",
+            "password_hash": seed_hash,
             "full_name": "Alex Rivera",
             "role": "freelancer",
             "paypal_email": "sb-arivera-freelancer@personal.example.com",
@@ -63,7 +65,7 @@ class InMemoryDataStore:
         self.profiles[admin_id] = {
             "id": admin_id,
             "email": "admin@pactflow.io",
-            "password_hash": "$2b$12$e80yq9g6i3mXQ2B2QyLzUe7u7vX/8d1w8rKzZ3G1N8R2v8kF2P1Y2",
+            "password_hash": seed_hash,
             "full_name": "Elena Rostova",
             "role": "admin",
             "paypal_email": "admin@pactflow.io",
