@@ -92,3 +92,4 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         avatar_url=current_user.get("avatar_url"),
         created_at=current_user["created_at"]
     )
+

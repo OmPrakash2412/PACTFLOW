@@ -129,3 +129,4 @@ class PayPalWebhookEvent(BaseModel):
     summary: Optional[str] = None
     resource: Dict[str, Any]
     links: Optional[List[Dict[str, Any]]] = None
+

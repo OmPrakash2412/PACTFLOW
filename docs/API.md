@@ -35,3 +35,4 @@ All backend endpoints are served under `/api` by the FastAPI service.
 
 ## 7. AI Coordinators
 - `GET /api/ai/coordinator/{project_id}`: Retrieve Gemini Payment Coordinator project analysis and action items.
+

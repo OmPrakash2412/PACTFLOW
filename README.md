@@ -211,3 +211,4 @@ backend/tests/unit/test_trust_ledger.py::test_hash_calculation_determinism PASSE
 ## 9. License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+

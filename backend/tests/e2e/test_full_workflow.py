@@ -125,3 +125,4 @@ async def test_full_pactflow_end_to_end_workflow():
         assert trust_resp.status_code == 200
         assert trust_resp.json()["is_valid"] is True
         assert trust_resp.json()["total_events"] >= 6
+

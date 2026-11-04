@@ -44,3 +44,4 @@ def verify_chain(events: list) -> bool:
         expected_prev = computed_hash
 
     return True
+

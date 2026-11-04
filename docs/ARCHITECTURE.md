@@ -40,3 +40,4 @@ PACTFLOW/
 - SHA-256 hash formula:
   $$H_n = \text{SHA256}(H_{n-1} \parallel \text{CanonicalJSON}(E_n))$$
 - Verifies zero tampering from genesis hash to the latest sequence block.
+

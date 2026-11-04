@@ -42,3 +42,4 @@ class MilestoneResponse(BaseModel):
     invoice_id: Optional[str] = None
     invoice_status: Optional[str] = None
     paypal_hosted_url: Optional[str] = None
+

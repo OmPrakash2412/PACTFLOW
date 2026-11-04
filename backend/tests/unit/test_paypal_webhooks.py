@@ -55,3 +55,4 @@ async def test_webhook_missing_headers():
     headers = {"content-type": "application/json"}
     verified = await service.verify_signature(headers, {"id": "test"})
     assert verified is False
+

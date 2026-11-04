@@ -23,3 +23,4 @@ class TrustVerificationStatus(BaseModel):
     latest_hash: str
     verified_at: str
     tamper_detected: bool = False
+

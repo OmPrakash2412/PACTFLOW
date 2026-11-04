@@ -62,3 +62,4 @@ async def health():
         "paypal_sandbox": "ready",
         "gemini_ai": "active"
     }
+

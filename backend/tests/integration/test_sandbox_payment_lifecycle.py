@@ -86,3 +86,4 @@ async def test_full_sandbox_payment_lifecycle():
         trust_status = verify_resp.json()
         assert trust_status["is_valid"] is True
         assert trust_status["tamper_detected"] is False
+

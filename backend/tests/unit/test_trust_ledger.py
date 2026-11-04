@@ -31,3 +31,4 @@ def test_hash_calculation_determinism():
 
     assert hash1 == hash2
     assert len(hash1) == 64
+

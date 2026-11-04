@@ -35,3 +35,4 @@ async def test_pact_architect_structured_criteria():
     assert len(agreement.acceptance_criteria) >= 2
     assert len(agreement.assumptions) >= 2
     assert len(agreement.clarification_questions) >= 1
+

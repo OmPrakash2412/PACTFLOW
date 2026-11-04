@@ -198,3 +198,4 @@ async def get_project(project_id: str, current_user: dict = Depends(get_current_
         freelancer_email=freelancer_email,
         members=members
     )
+

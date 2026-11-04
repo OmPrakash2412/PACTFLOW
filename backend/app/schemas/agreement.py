@@ -63,3 +63,4 @@ class AgreementResponse(BaseModel):
     acceptances: Optional[List[AgreementAcceptanceRecord]] = None
     is_client_accepted: bool = False
     is_freelancer_accepted: bool = False
+

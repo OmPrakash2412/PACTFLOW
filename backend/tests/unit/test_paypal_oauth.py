@@ -65,3 +65,4 @@ async def test_paypal_oauth_failure_handling():
         mock_post.return_value = mock_resp
         with pytest.raises(RuntimeError, match="Failed to obtain PayPal OAuth token"):
             await service.get_access_token()
+

@@ -195,3 +195,4 @@ async def get_invoice(invoice_id: str, current_user: dict = Depends(get_current_
         created_at=inv["created_at"],
         updated_at=inv["updated_at"]
     )
+

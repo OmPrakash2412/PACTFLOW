@@ -42,3 +42,4 @@ class ProjectResponse(BaseModel):
     freelancer_name: Optional[str] = None
     freelancer_email: Optional[str] = None
     members: Optional[List[ProjectMemberSchema]] = None
+

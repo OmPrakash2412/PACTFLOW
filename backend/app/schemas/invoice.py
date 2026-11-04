@@ -23,3 +23,4 @@ class InvoiceResponseSchema(BaseModel):
     paypal_hosted_url: Optional[str] = None
     created_at: str
     updated_at: str
+

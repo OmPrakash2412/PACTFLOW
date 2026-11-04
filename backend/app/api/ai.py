@@ -21,3 +21,4 @@ async def get_payment_coordination(project_id: str, current_user: dict = Depends
         invoices=invoices
     )
     return summary
+

@@ -246,3 +246,4 @@ async def accept_agreement(agreement_id: str, current_user: dict = Depends(get_c
         is_client_accepted=any(acc.role == "client" for acc in acceptances),
         is_freelancer_accepted=any(acc.role == "freelancer" for acc in acceptances)
     )
+

@@ -29,3 +29,4 @@ docker-compose up --build
 ```
 - Backend: `http://localhost:8000` (Swagger docs at `/docs`)
 - Frontend: `http://localhost:3000`
+

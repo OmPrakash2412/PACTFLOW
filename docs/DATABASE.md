@@ -20,3 +20,4 @@ PACTFLOW utilizes PostgreSQL with Supabase Row Level Security (RLS) policies.
 ## 2. Row Level Security (RLS)
 - Multi-tenant isolation: Users only see projects and agreements they belong to.
 - Immutable Ledgers: SQL triggers explicitly reject `UPDATE` and `DELETE` queries on `trust_events` and `payments`.
+

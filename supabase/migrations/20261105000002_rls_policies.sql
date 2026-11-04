@@ -227,3 +227,4 @@ DROP TRIGGER IF EXISTS trg_immutable_payments ON payments;
 CREATE TRIGGER trg_immutable_payments
 BEFORE UPDATE OR DELETE ON payments
 FOR EACH ROW EXECUTE FUNCTION prevent_modification();
+

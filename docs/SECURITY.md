@@ -14,3 +14,4 @@
 - Every state change appends a block to the Trust Ledger.
 - SHA-256 hash chaining prevents retrospective modification of agreements, approvals, or payments.
 - Database triggers reject SQL `UPDATE` and `DELETE` on financial audit records.
+

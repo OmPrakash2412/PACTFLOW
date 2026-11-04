@@ -195,3 +195,4 @@ CREATE INDEX IF NOT EXISTS idx_invoices_milestone ON invoices(milestone_id);
 CREATE INDEX IF NOT EXISTS idx_payments_invoice ON payments(invoice_id);
 CREATE INDEX IF NOT EXISTS idx_trust_events_project ON trust_events(project_id);
 CREATE INDEX IF NOT EXISTS idx_trust_events_seq ON trust_events(sequence_number);
+

@@ -34,3 +34,4 @@ def check_project_membership(user_id: str, project_id: str, allowed_roles: List[
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Unauthorized: User is not an active participant in this project."
     )
+

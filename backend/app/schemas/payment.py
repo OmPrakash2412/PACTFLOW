@@ -15,3 +15,4 @@ class PaymentRecordResponse(BaseModel):
     status: str
     payment_method: str
     paid_at: str
+

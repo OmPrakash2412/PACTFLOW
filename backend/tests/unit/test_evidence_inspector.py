@@ -46,3 +46,4 @@ async def test_evidence_inspector_satisfied_with_complete_artifacts():
     assert report.overall_verdict == "satisfied"
     assert report.confidence_score >= 85.0
     assert len(report.satisfied_criteria) == 2
+

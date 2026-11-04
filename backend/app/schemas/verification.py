@@ -46,3 +46,4 @@ class ClientApprovalRequest(BaseModel):
     milestone_id: str
     action: Literal["approve", "request_revisions"]
     feedback: Optional[str] = None
+

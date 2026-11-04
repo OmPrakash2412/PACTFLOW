@@ -40,3 +40,4 @@ PACTFLOW coordinates the entire work-payment lifecycle:
 - **Security**: Zero client-side secret exposure; webhook signature verification; IDOR prevention; input sanitization.
 - **Performance**: Backend sub-50ms API response time; Next.js 14 server components and client optimization.
 - **Reliability**: Webhook idempotency preventing duplicate ledger credits.
+

@@ -26,3 +26,4 @@ class DeliverableResponse(BaseModel):
     updated_at: str
     has_verification_report: bool = False
     verification_report_id: Optional[str] = None
+

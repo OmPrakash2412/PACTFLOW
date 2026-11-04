@@ -27,3 +27,4 @@ def canonicalize(data: Any) -> str:
         separators=(',', ':'),
         ensure_ascii=False
     )
+

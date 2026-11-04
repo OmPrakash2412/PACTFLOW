@@ -185,3 +185,4 @@ export interface PaymentCoordination {
   suggested_communications: string[];
   risk_assessment: string;
 }
+

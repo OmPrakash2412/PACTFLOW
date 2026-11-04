@@ -51,3 +51,4 @@ async def test_paypal_send_invoice_and_hosted_url():
     service = PayPalInvoiceService(client=mock_client)
     send_result = await service.send_invoice("INV2-TEST-1234-ABCD")
     assert send_result.hosted_payer_url == "https://www.sandbox.paypal.com/invoice/p/#INV2-TEST-1234-ABCD"
+
