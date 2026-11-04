@@ -161,6 +161,19 @@ async def get_project(project_id: str, current_user: dict = Depends(get_current_
     if not project:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found.")
 
+    # IDOR Protection: verify user is client, member, or admin
+    if current_user.get("role") != "admin":
+        is_client = project["client_id"] == current_user["id"]
+        is_member = any(
+            m["project_id"] == project_id and m["user_id"] == current_user["id"]
+            for m in db_store.project_members.values()
+        )
+        if not is_client and not is_member:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Unauthorized: User is not an active participant in this project."
+            )
+
     client = db_store.profiles.get(project["client_id"], {})
     freelancer_id = None
     freelancer_name = None
@@ -197,5 +210,43 @@ async def get_project(project_id: str, current_user: dict = Depends(get_current_
         freelancer_name=freelancer_name,
         freelancer_email=freelancer_email,
         members=members
+    )
+
+
+@router.post("/{project_id}/members", response_model=ProjectMemberSchema)
+async def add_project_member(
+    project_id: str,
+    member_data: ProjectMemberSchema,
+    current_user: dict = Depends(get_current_user)
+):
+    project = db_store.projects.get(project_id)
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found.")
+
+    # Only project owner or admin can add members
+    if project["client_id"] != current_user["id"] and current_user.get("role") != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only project client can manage members.")
+
+    # Check if user already a member
+    for m in db_store.project_members.values():
+        if m["project_id"] == project_id and m["user_id"] == member_data.user_id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User is already a project member.")
+
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    pm_id = str(uuid.uuid4())
+    db_store.project_members[pm_id] = {
+        "id": pm_id,
+        "project_id": project_id,
+        "user_id": member_data.user_id,
+        "role": member_data.role,
+        "joined_at": now_iso
+    }
+
+    profile = db_store.profiles.get(member_data.user_id, {})
+    return ProjectMemberSchema(
+        user_id=member_data.user_id,
+        role=member_data.role,
+        full_name=profile.get("full_name"),
+        email=profile.get("email")
     )
 
