@@ -109,3 +109,4 @@ async def test_project_membership_and_idor_protection():
         member_get = await client.get(f"/api/projects/{project_id}", headers=stranger_headers)
         assert member_get.status_code == 200
         assert member_get.json()["id"] == project_id
+

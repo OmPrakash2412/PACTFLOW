@@ -39,11 +39,16 @@ async def generate_agreement(
     agreement_id = str(uuid.uuid4())
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    # Determine version
+    # Determine version and supersede previous versions
     existing_versions = [
         a["version"] for a in db_store.agreements.values() if a["project_id"] == req.project_id
     ]
     next_version = (max(existing_versions) + 1) if existing_versions else 1
+
+    for old_a in db_store.agreements.values():
+        if old_a["project_id"] == req.project_id and old_a["status"] != "superseded":
+            old_a["status"] = "superseded"
+            old_a["updated_at"] = now_iso
 
     agreement_data = {
         "id": agreement_id,
@@ -216,6 +221,44 @@ async def accept_agreement(agreement_id: str, current_user: dict = Depends(get_c
         )
 
     # Build response
+    acceptances = [
+        AgreementAcceptanceRecord(
+            id=acc["id"],
+            agreement_id=acc["agreement_id"],
+            user_id=acc["user_id"],
+            role=acc["role"],
+            accepted_at=acc["accepted_at"],
+            signature_hash=acc["signature_hash"]
+        )
+        for acc in db_store.agreement_acceptances.values()
+        if acc["agreement_id"] == agreement_id
+    ]
+
+    return AgreementResponse(
+        id=agreement["id"],
+        project_id=agreement["project_id"],
+        version=agreement["version"],
+        title=agreement["title"],
+        scope_of_work=agreement["scope_of_work"],
+        budget_allocation=agreement["budget_allocation"],
+        acceptance_criteria=agreement["acceptance_criteria"],
+        assumptions=agreement["assumptions"],
+        clarification_questions=agreement["clarification_questions"],
+        status=agreement["status"],
+        created_at=agreement["created_at"],
+        updated_at=agreement["updated_at"],
+        acceptances=acceptances,
+        is_client_accepted=any(acc.role == "client" for acc in acceptances),
+        is_freelancer_accepted=any(acc.role == "freelancer" for acc in acceptances)
+    )
+
+
+@router.get("/{agreement_id}", response_model=AgreementResponse)
+async def get_agreement(agreement_id: str, current_user: dict = Depends(get_current_user)):
+    agreement = db_store.agreements.get(agreement_id)
+    if not agreement:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Agreement not found.")
+
     acceptances = [
         AgreementAcceptanceRecord(
             id=acc["id"],
