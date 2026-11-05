@@ -10,6 +10,7 @@ from ..schemas.verification import (
 )
 from ..agents.evidence_inspector import evidence_inspector
 from ..database.store import db_store
+from ..utils.security_validators import validate_safe_url
 from .deps import get_current_user
 
 router = APIRouter(prefix="/deliverables", tags=["Deliverables & Verification"])
@@ -40,6 +41,17 @@ async def submit_deliverable(
         )
 
     now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    # SSRF Protection: Validate demo_url and file_urls
+    if req.demo_url:
+        is_safe, msg = validate_safe_url(req.demo_url)
+        if not is_safe:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"SSRF Protection: {msg}")
+
+    for f_url in req.file_urls:
+        is_safe, msg = validate_safe_url(f_url)
+        if not is_safe:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"SSRF Protection: {msg}")
 
     # Check if a deliverable already exists for this milestone (e.g. revision cycle)
     existing_deliv = next(

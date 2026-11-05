@@ -120,7 +120,7 @@ PACTFLOW implements the **real PayPal Developer Sandbox REST API** (`https://api
 - **Database & RLS**: PostgreSQL (Supabase schema migrations, foreign keys, RLS policies).
 - **AI**: Google Gemini API (`google-genai` SDK, structured JSON output).
 - **Payments**: PayPal Developer Sandbox (REST API, Invoicing v2, Webhooks).
-- **Testing**: Pytest, Pytest-Asyncio (29 automated unit, integration, and E2E tests).
+- **Testing**: Pytest, Pytest-Asyncio (33 automated unit, integration, and E2E security tests).
 
 ---
 
@@ -166,7 +166,7 @@ docker-compose up --build
 
 ## 7. Running Test Suites
 
-Run the complete 29-test suite covering unit, integration, and end-to-end flows:
+Run the complete 33-test suite covering unit, integration, and end-to-end security flows:
 
 ```bash
 cd backend
@@ -197,6 +197,10 @@ backend/tests/unit/test_paypal_oauth.py::test_paypal_oauth_failure_handling PASS
 backend/tests/unit/test_paypal_webhooks.py::test_webhook_signature_verification_success PASSED
 backend/tests/unit/test_paypal_webhooks.py::test_webhook_signature_verification_failure PASSED
 backend/tests/unit/test_paypal_webhooks.py::test_webhook_missing_headers PASSED
+backend/tests/unit/test_phase10_security_audit.py::test_ssrf_protection_validator PASSED
+backend/tests/unit/test_phase10_security_audit.py::test_ssrf_rejection_on_deliverable_submission PASSED
+backend/tests/unit/test_phase10_security_audit.py::test_webhook_replay_and_idempotency_defense PASSED
+backend/tests/unit/test_phase10_security_audit.py::test_jwt_algorithm_enforcement PASSED
 backend/tests/unit/test_phase6_deliverable_lifecycle.py::test_evidence_inspector_prompt_injection_neutralization PASSED
 backend/tests/unit/test_phase6_deliverable_lifecycle.py::test_phase6_full_deliverable_revision_and_approval_cycle PASSED
 backend/tests/unit/test_phase7_trust_and_coordinator.py::test_trust_ledger_cryptographic_integrity_and_tamper_detection PASSED
@@ -205,7 +209,7 @@ backend/tests/unit/test_trust_ledger.py::test_trust_ledger_chain_integrity PASSE
 backend/tests/unit/test_trust_ledger.py::test_trust_ledger_tamper_detection PASSED
 backend/tests/unit/test_trust_ledger.py::test_hash_calculation_determinism PASSED
 
-============================= 29 passed in 3.78s ==============================
+============================= 33 passed in 4.61s ==============================
 ```
 
 ---
