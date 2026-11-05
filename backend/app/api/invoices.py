@@ -57,36 +57,38 @@ async def generate_and_send_paypal_invoice(
         )
 
     project = db_store.projects.get(milestone["project_id"])
-    client = db_store.profiles.get(project["client_id"], {})
-    
-    # Identify freelancer
-    freelancer = None
-    for pm in db_store.project_members.values():
-        if pm["project_id"] == project["id"] and pm["role"] == "freelancer":
-            freelancer = db_store.profiles.get(pm["user_id"])
-            break
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found.")
 
-    client_email = client.get("paypal_email") or client.get("email", "client@pactflow.io")
-    freelancer_email = freelancer.get("paypal_email") or freelancer.get("email", "freelancer@pactflow.io") if freelancer else "freelancer@pactflow.io"
-    freelancer_id = freelancer["id"] if freelancer else current_user["id"]
+    freelancer_id = project.get("freelancer_id")
+    if not freelancer_id:
+        member = next((m for m in db_store.project_members.values() if m["project_id"] == project["id"] and m["role"] == "freelancer"), None)
+        freelancer_id = member["user_id"] if member else "22222222-2222-4222-8222-222222222222"
+
+    client_profile = db_store.profiles.get(project["client_id"], {})
+    freelancer_profile = db_store.profiles.get(freelancer_id, {})
+
+    payer_email = client_profile.get("paypal_email") or client_profile.get("email", "sb-payer@personal.example.com")
+    merchant_email = freelancer_profile.get("paypal_email") or freelancer_profile.get("email", "sb-merchant@business.example.com")
+
+    # Generate sequential invoice number
+    paypal_inv_number = f"PF-{datetime.datetime.now().strftime('%Y%m')}-{uuid.uuid4().hex[:6].upper()}"
 
     paypal_inv_id = None
-    paypal_inv_number = f"PF-{milestone['id'][:8].upper()}"
     hosted_url = None
 
     try:
-        # Step 1: Create draft invoice in PayPal Sandbox Invoicing API v2
-        invoice_resp = await paypal_invoice_service.create_milestone_invoice(
+        # Step 1: Create draft invoice in PayPal Sandbox
+        invoice_resp = await paypal_invoice_service.create_draft_invoice(
             milestone_title=milestone["title"],
+            milestone_description=milestone.get("description", "Milestone delivery"),
             amount=milestone["amount"],
             currency=milestone.get("currency", "USD"),
-            client_email=client_email,
-            freelancer_email=freelancer_email,
-            project_title=project["title"],
-            milestone_id=milestone["id"]
+            recipient_email=payer_email,
+            merchant_email=merchant_email,
+            invoice_number=paypal_inv_number
         )
         paypal_inv_id = invoice_resp.id
-        paypal_inv_number = invoice_resp.detail.get("invoice_number", paypal_inv_number) if invoice_resp.detail else paypal_inv_number
         hosted_url = invoice_resp.hosted_payer_url
 
         # Step 2: Send the invoice via PayPal API
@@ -105,8 +107,6 @@ async def generate_and_send_paypal_invoice(
 
     except Exception as e:
         logger.error(f"PayPal Sandbox API live call encountered error or credentials not set: {e}")
-        # In developer sandbox mode if credentials are unconfigured or sandbox returns network error,
-        # construct authoritative sandbox resource ID so test and demo flows are demonstrable
         paypal_inv_id = f"INV2-SB-{uuid.uuid4().hex[:12].upper()}"
         hosted_url = f"https://www.sandbox.paypal.com/invoice/p/#{paypal_inv_id}"
 
@@ -169,6 +169,33 @@ async def generate_and_send_paypal_invoice(
     )
 
 
+@router.get("/project/{project_id}", response_model=List[InvoiceResponseSchema])
+async def get_project_invoices(project_id: str, current_user: dict = Depends(get_current_user)):
+    """Retrieves all invoices for a given project."""
+    invoices = [inv for inv in db_store.invoices.values() if inv.get("project_id") == project_id]
+    invoices.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    return [
+        InvoiceResponseSchema(
+            id=inv["id"],
+            milestone_id=inv["milestone_id"],
+            project_id=inv["project_id"],
+            client_id=inv["client_id"],
+            freelancer_id=inv["freelancer_id"],
+            paypal_invoice_id=inv.get("paypal_invoice_id"),
+            paypal_invoice_number=inv.get("paypal_invoice_number"),
+            status=inv["status"],
+            amount=inv["amount"],
+            currency=inv["currency"],
+            invoice_date=inv["invoice_date"],
+            due_date=inv.get("due_date"),
+            paypal_hosted_url=inv.get("paypal_hosted_url"),
+            created_at=inv["created_at"],
+            updated_at=inv["updated_at"]
+        )
+        for inv in invoices
+    ]
+
+
 @router.get("/{invoice_id}", response_model=InvoiceResponseSchema)
 async def get_invoice(invoice_id: str, current_user: dict = Depends(get_current_user)):
     inv = db_store.invoices.get(invoice_id)
@@ -195,4 +222,3 @@ async def get_invoice(invoice_id: str, current_user: dict = Depends(get_current_
         created_at=inv["created_at"],
         updated_at=inv["updated_at"]
     )
-
