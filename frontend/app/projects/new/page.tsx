@@ -50,33 +50,36 @@ export default function NewProjectPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-3xl mx-auto space-y-6 py-2">
       <Link
         href="/dashboard"
-        className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+        className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[#7A6C5B] hover:text-[#231A12] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         Back to Dashboard
       </Link>
 
       <div className="space-y-1">
-        <span className="text-xs font-mono text-primary font-medium uppercase tracking-wider">New Agreement Specification</span>
-        <h1 className="text-3xl font-bold text-white tracking-tight">Create Verifiable Project</h1>
-        <p className="text-sm text-slate-400">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[11px] font-semibold tracking-wide uppercase mb-1">
+          <Sparkles className="w-3 h-3 text-amber-700" />
+          New Agreement Specification
+        </div>
+        <h1 className="text-3xl font-black text-[#231A12] tracking-tight">Create Verifiable Project</h1>
+        <p className="text-xs sm:text-sm text-[#6B5C4D]">
           Define your project scope and budget. Gemini Pact Architect will convert your specifications into structured milestone criteria.
         </p>
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm">
+        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold backdrop-blur-md">
           {error}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="glass-panel p-8 rounded-2xl border border-navy-800 space-y-6">
+      <form onSubmit={handleSubmit} className="glass-card p-8 rounded-3xl border border-white/90 shadow-glass space-y-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-200">
-            Project Title <span className="text-rose-400">*</span>
+          <label className="block text-xs font-bold text-[#4B3F33]">
+            Project Title <span className="text-rose-600">*</span>
           </label>
           <input
             type="text"
@@ -84,13 +87,13 @@ export default function NewProjectPage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Next-Gen Realtime DeFi Portfolio Tracker"
-            className="w-full px-4 py-2.5 rounded-xl bg-navy-950 border border-navy-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary text-sm"
+            className="w-full px-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
           />
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-200">
-            Requirements & Technical Scope <span className="text-rose-400">*</span>
+          <label className="block text-xs font-bold text-[#4B3F33]">
+            Requirements & Technical Scope <span className="text-rose-600">*</span>
           </label>
           <textarea
             required
@@ -98,84 +101,71 @@ export default function NewProjectPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe deliverables, architecture preferences, required integrations, and SLAs. Gemini will extract verifiable criteria from this text."
-            className="w-full px-4 py-2.5 rounded-xl bg-navy-950 border border-navy-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary text-sm leading-relaxed"
+            className="w-full px-4 py-3 rounded-xl glass-input text-xs font-medium text-[#231A12]"
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-200">
-              Total Budget (USD) <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold text-[#4B3F33]">
+              Total Committed Budget (USD) <span className="text-rose-600">*</span>
             </label>
             <div className="relative">
-              <span className="absolute left-3.5 top-2.5 text-slate-400 text-sm">$</span>
+              <DollarSign className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
               <input
                 type="number"
                 required
-                min={50}
+                min={100}
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
-                className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-navy-950 border border-navy-700 text-white focus:outline-none focus:border-primary text-sm font-mono"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-bold text-[#231A12]"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-slate-200">
-              Invite Freelancer Email (Optional)
+            <label className="block text-xs font-bold text-[#4B3F33]">
+              Invited Freelancer Email (Optional)
             </label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+              <Mail className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
               <input
                 type="email"
                 value={freelancerEmail}
                 onChange={(e) => setFreelancerEmail(e.target.value)}
-                placeholder="freelancer@example.com"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-navy-950 border border-navy-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary text-sm"
+                placeholder="freelancer@pactflow.io"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
               />
             </div>
           </div>
         </div>
 
-        {/* Gemini Auto-Architect Switch */}
-        <div className="p-4 rounded-xl bg-navy-950 border border-primary/30 flex items-start gap-3">
+        <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center text-purple-700">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-xs font-bold text-[#231A12] block">Enable Gemini Pact Architect</span>
+              <span className="text-[11px] text-[#6B5C4D] block font-medium">Auto-synthesize contract milestones & acceptance criteria upon creation</span>
+            </div>
+          </div>
           <input
             type="checkbox"
-            id="gemini-toggle"
             checked={autoDraftAgreement}
             onChange={(e) => setAutoDraftAgreement(e.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-navy-700 bg-navy-900 text-primary focus:ring-primary"
+            className="w-4 h-4 accent-purple-600 rounded cursor-pointer"
           />
-          <label htmlFor="gemini-toggle" className="text-xs space-y-1 cursor-pointer">
-            <span className="font-bold text-white flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              Synthesize Structured Agreement via Gemini Pact Architect
-            </span>
-            <span className="text-slate-400 block">
-              Gemini will immediately generate milestones, budget allocations, objective test criteria, assumptions, and clarification questions.
-            </span>
-          </label>
         </div>
 
         <button
           type="submit"
-          disabled={loading || !title || !description}
-          className="w-full py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-primary/25 disabled:opacity-50 transition-all text-sm"
+          disabled={loading}
+          className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group"
         >
-          {loading ? (
-            <span className="flex items-center gap-2 font-mono">
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-              Synthesizing Project & Agreement...
-            </span>
-          ) : (
-            <>
-              <Layers className="w-4 h-4" />
-              Create Project & Launch Workspace
-            </>
-          )}
+          {loading ? 'Synthesizing with Gemini AI...' : 'Create Project & Generate Milestones'}
         </button>
       </form>
     </div>
   );
 }
-

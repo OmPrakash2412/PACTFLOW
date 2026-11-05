@@ -12,7 +12,7 @@ import {
   ArrowRight,
   TrendingUp,
   FileCheck2,
-  AlertCircle
+  Sparkles
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -27,7 +27,7 @@ import {
   Cell
 } from 'recharts';
 import { api } from '../../../lib/api';
-import { Project, Milestone } from '../../../types';
+import { Project } from '../../../types';
 
 export default function ClientDashboard() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -48,7 +48,7 @@ export default function ClientDashboard() {
           const total = data.reduce((acc, p) => acc + Number(p.budget), 0);
           setStats({
             totalBudget: total,
-            paidAmount: 2500, // Seed paid amount
+            paidAmount: 2500,
             pendingAmount: total - 2500,
             activeContracts: data.length,
           });
@@ -63,77 +63,80 @@ export default function ClientDashboard() {
   }, []);
 
   const chartData = [
-    { name: 'Milestone 1 (Architecture)', amount: 2500, status: 'Paid' },
-    { name: 'Milestone 2 (AI Engine)', amount: 2500, status: 'Approved' },
-    { name: 'Milestone 3 (PayPal Invoicing)', amount: 1500, status: 'In Progress' },
+    { name: 'M1: Architecture', amount: 2500, status: 'Paid' },
+    { name: 'M2: AI Engine', amount: 2500, status: 'Approved' },
+    { name: 'M3: PayPal Invoicing', amount: 1500, status: 'In Progress' },
   ];
 
   const pieData = [
-    { name: 'Settled (PayPal)', value: 2500, color: '#10B981' },
-    { name: 'Approved Pending Pay', value: 2500, color: '#6366F1' },
-    { name: 'In Progress', value: 1500, color: '#0EA5E9' },
+    { name: 'Settled (PayPal)', value: 2500, color: '#059669' },
+    { name: 'Approved Pending Pay', value: 2500, color: '#7C3AED' },
+    { name: 'In Progress', value: 1500, color: '#D97706' },
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 py-2">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-mono text-primary font-medium uppercase tracking-wider">Client Management Center</span>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Active Projects & Settlement</h1>
-          <p className="text-slate-400 text-sm mt-1">Review deliverables, approve verified work, and authorize PayPal milestone invoices.</p>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[11px] font-semibold tracking-wide uppercase mb-1">
+            <Sparkles className="w-3 h-3 text-amber-700" />
+            Client Management Center
+          </div>
+          <h1 className="text-3xl font-black text-[#231A12] tracking-tight">Active Projects & Settlement</h1>
+          <p className="text-[#6B5C4D] text-xs sm:text-sm mt-0.5">Review deliverables, approve verified work, and authorize PayPal milestone invoices.</p>
         </div>
         <Link
           href="/projects/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold shadow-lg shadow-primary/20 transition-all self-start sm:self-auto"
+          className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all self-start sm:self-auto group"
         >
           <Plus className="w-4 h-4" />
-          Create Project with Gemini
+          <span>Create Project with Gemini</span>
         </Link>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-panel p-5 rounded-xl border border-navy-800">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
+        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+          <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>TOTAL COMMITTED</span>
-            <DollarSign className="w-4 h-4 text-primary" />
+            <DollarSign className="w-4 h-4 text-purple-700" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2">${stats.totalBudget.toLocaleString()} USD</div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1 font-mono">
-            <span className="text-emerald-400">100%</span> Dual-accepted agreement
+          <div className="text-2xl font-black text-[#231A12] mt-2">${stats.totalBudget.toLocaleString()} USD</div>
+          <div className="text-xs text-[#6B5C4D] mt-1 flex items-center gap-1 font-medium">
+            <span className="text-emerald-700 font-bold">100%</span> Dual-accepted agreement
           </div>
         </div>
 
-        <div className="glass-panel p-5 rounded-xl border border-navy-800">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
+        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+          <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>SETTLED (PAYPAL)</span>
-            <CheckCircle className="w-4 h-4 text-emerald-400" />
+            <CheckCircle className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-bold text-emerald-400 mt-2">${stats.paidAmount.toLocaleString()} USD</div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1 font-mono">
+          <div className="text-2xl font-black text-emerald-700 mt-2">${stats.paidAmount.toLocaleString()} USD</div>
+          <div className="text-xs text-[#6B5C4D] mt-1 flex items-center gap-1 font-medium">
             <span>Authoritative capture verified</span>
           </div>
         </div>
 
-        <div className="glass-panel p-5 rounded-xl border border-navy-800">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
+        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+          <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>PENDING SETTLEMENT</span>
-            <Clock className="w-4 h-4 text-secondary" />
+            <Clock className="w-4 h-4 text-amber-700" />
           </div>
-          <div className="text-2xl font-bold text-white mt-2">${stats.pendingAmount.toLocaleString()} USD</div>
-          <div className="text-xs text-slate-400 mt-1 flex items-center gap-1 font-mono">
+          <div className="text-2xl font-black text-[#231A12] mt-2">${stats.pendingAmount.toLocaleString()} USD</div>
+          <div className="text-xs text-[#6B5C4D] mt-1 flex items-center gap-1 font-medium">
             <span>Awaiting deliverable review</span>
           </div>
         </div>
 
-        <div className="glass-panel p-5 rounded-xl border border-navy-800">
-          <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
+        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+          <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>TRUST LEDGER</span>
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
+            <ShieldCheck className="w-4 h-4 text-purple-700" />
           </div>
-          <div className="text-2xl font-bold text-purple-400 mt-2">Verified Valid</div>
-          <div className="text-xs text-slate-400 mt-1 font-mono">
+          <div className="text-2xl font-black text-purple-700 mt-2">Verified Valid</div>
+          <div className="text-xs text-[#6B5C4D] mt-1 font-mono font-medium">
             SHA-256 unbroken chain
           </div>
         </div>
@@ -141,34 +144,34 @@ export default function ClientDashboard() {
 
       {/* Analytics Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 glass-panel p-6 rounded-xl border border-navy-800 space-y-4">
+        <div className="lg:col-span-2 glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" />
+            <h3 className="text-base font-bold text-[#231A12] flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-purple-700" />
               Milestone Allocation & Status
             </h3>
-            <span className="text-xs font-mono text-slate-400">Project: PulseAnalytics AI</span>
+            <span className="text-xs font-mono text-[#7A6C5B]">Project: PulseAnalytics AI</span>
           </div>
 
           <div className="h-64 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" />
-                <XAxis dataKey="name" stroke="#64748B" fontSize={11} />
-                <YAxis stroke="#64748B" fontSize={11} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#EAE1D2" />
+                <XAxis dataKey="name" stroke="#7A6C5B" fontSize={11} />
+                <YAxis stroke="#7A6C5B" fontSize={11} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#F8FAFC' }}
+                  contentStyle={{ backgroundColor: '#FAF7F2', borderColor: '#DFD4C3', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
+                  itemStyle={{ color: '#231A12', fontWeight: 600 }}
                 />
-                <Bar dataKey="amount" fill="#6366F1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="amount" fill="#7C3AED" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass-panel p-6 rounded-xl border border-navy-800 space-y-4">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
-            <Layers className="w-4 h-4 text-secondary" />
+        <div className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
+          <h3 className="text-base font-bold text-[#231A12] flex items-center gap-2">
+            <Layers className="w-4 h-4 text-amber-700" />
             Budget Settlement Split
           </h3>
           <div className="h-48 w-full flex items-center justify-center">
@@ -188,20 +191,20 @@ export default function ClientDashboard() {
                   ))}
                 </Pie>
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0B0F19', borderColor: '#334155', borderRadius: '8px' }}
-                  itemStyle={{ color: '#F8FAFC' }}
+                  contentStyle={{ backgroundColor: '#FAF7F2', borderColor: '#DFD4C3', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
+                  itemStyle={{ color: '#231A12', fontWeight: 600 }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="space-y-1.5 text-xs">
+          <div className="space-y-2 text-xs">
             {pieData.map((item, idx) => (
-              <div key={idx} className="flex items-center justify-between text-slate-300">
+              <div key={idx} className="flex items-center justify-between text-[#4B3F33] font-medium">
                 <span className="flex items-center gap-2">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }}></span>
                   {item.name}
                 </span>
-                <span className="font-mono">${item.value}</span>
+                <span className="font-mono font-bold">${item.value}</span>
               </div>
             ))}
           </div>
@@ -209,38 +212,38 @@ export default function ClientDashboard() {
       </div>
 
       {/* Projects List */}
-      <div className="glass-panel rounded-xl border border-navy-800 overflow-hidden">
-        <div className="p-5 border-b border-navy-800 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <FileCheck2 className="w-5 h-5 text-primary" />
+      <div className="glass-card rounded-3xl border border-white/90 shadow-glass overflow-hidden">
+        <div className="p-6 border-b border-[#EAE1D2] flex items-center justify-between">
+          <h2 className="text-lg font-bold text-[#231A12] flex items-center gap-2">
+            <FileCheck2 className="w-5 h-5 text-purple-700" />
             Active Client Projects
           </h2>
-          <span className="text-xs font-mono text-slate-400">{projects.length} Registered Project(s)</span>
+          <span className="text-xs font-mono text-[#7A6C5B] font-semibold">{projects.length} Registered Project(s)</span>
         </div>
 
-        <div className="divide-y divide-navy-800/60">
+        <div className="divide-y divide-[#EAE1D2]">
           {projects.map((project) => (
-            <div key={project.id} className="p-5 hover:bg-navy-900/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1 max-w-xl">
+            <div key={project.id} className="p-6 hover:bg-white/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="space-y-1.5 max-w-xl">
                 <div className="flex items-center gap-2.5">
-                  <Link href={`/projects/${project.id}`} className="text-base font-bold text-white hover:text-primary transition-colors">
+                  <Link href={`/projects/${project.id}`} className="text-base font-bold text-[#231A12] hover:text-purple-700 transition-colors">
                     {project.title}
                   </Link>
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
                     {project.status.toUpperCase()}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 line-clamp-1">{project.description}</p>
-                <div className="flex items-center gap-4 text-xs font-mono text-slate-400 pt-1">
-                  <span>Budget: <strong className="text-white">${project.budget} {project.currency}</strong></span>
-                  <span>Freelancer: <strong className="text-slate-200">{project.freelancer_name || 'Alex Rivera'}</strong></span>
+                <p className="text-xs text-[#6B5C4D] line-clamp-1">{project.description}</p>
+                <div className="flex items-center gap-4 text-xs font-mono text-[#7A6C5B] pt-1">
+                  <span>Budget: <strong className="text-[#231A12]">${project.budget} {project.currency}</strong></span>
+                  <span>Freelancer: <strong className="text-[#3B3026]">{project.freelancer_name || 'Alex Rivera'}</strong></span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <Link
                   href={`/projects/${project.id}`}
-                  className="px-4 py-2 rounded-lg bg-navy-850 hover:bg-navy-800 text-xs text-white border border-navy-700 font-medium flex items-center gap-1.5 transition-colors"
+                  className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 text-xs text-[#231A12] hover:text-purple-700 border border-[#DFD4C3] hover:border-purple-300 font-bold flex items-center gap-1.5 shadow-sm transition-all"
                 >
                   Workspace
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -253,4 +256,3 @@ export default function ClientDashboard() {
     </div>
   );
 }
-

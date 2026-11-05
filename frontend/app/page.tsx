@@ -1,270 +1,376 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ShieldCheck,
   Sparkles,
   ArrowRight,
-  FileCheck2,
-  Cpu,
   Lock,
+  Mail,
   Layers,
+  FileCheck2,
+  DollarSign,
   ChevronRight,
   ExternalLink,
-  Zap,
   CheckCircle2,
-  DollarSign,
-  AlertCircle
+  LogOut,
+  User,
+  Zap,
+  Cpu
 } from 'lucide-react';
+import { api } from '../lib/api';
 
-export default function LandingPage() {
-  const [activeWorkflowStep, setActiveWorkflowStep] = useState(0);
+export default function HomeOrLoginPage() {
+  const router = useRouter();
+  const [token, setToken] = useState<string | null>(null);
+  const [role, setRole] = useState<string | null>(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
-  const workflowSteps = [
-    {
-      title: "1. Agreement Synthesis",
-      actor: "Gemini Pact Architect",
-      desc: "Converts requirements and budget into a legally clear, verifiable milestone contract with concrete acceptance criteria.",
-      badge: "AI Contract Synthesis"
-    },
-    {
-      title: "2. Dual Acceptance",
-      actor: "Client & Freelancer",
-      desc: "Both parties digitally sign the exact contract version, sealing an immutable SHA-256 signature event in the Trust Ledger.",
-      badge: "Cryptographic Seal"
-    },
-    {
-      title: "3. Deliverable Submission",
-      actor: "Freelancer",
-      desc: "Code repositories, build artifacts, test runner logs, and live staging URLs are submitted for milestone verification.",
-      badge: "Evidence Ingestion"
-    },
-    {
-      title: "4. Objective Evidence Audit",
-      actor: "Gemini Evidence Inspector",
-      desc: "Analyzes artifacts against agreed criteria. Uses honest assessments ('satisfied', 'uncertain', 'missing') and rejects screenshots for dynamic tests.",
-      badge: "Zero-Trust Verification"
-    },
-    {
-      title: "5. Human Approval",
-      actor: "Client Decision",
-      desc: "Client reviews the AI evidence report and manually approves the milestone or requests revisions. AI never authorizes payouts independently.",
-      badge: "Human In The Loop"
-    },
-    {
-      title: "6. PayPal Sandbox Settlement",
-      actor: "PayPal Invoicing v2 API",
-      desc: "Creates and sends an authoritative PayPal invoice. Status is reconciled via signed webhooks directly into the Trust Ledger.",
-      badge: "Settlement Complete"
+  // Login form state
+  const [email, setEmail] = useState('client@pactflow.io');
+  const [password, setPassword] = useState('password123');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Workflow visual tab
+  const [showArchitecture, setShowArchitecture] = useState(false);
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem('pactflow_token');
+    const savedRole = localStorage.getItem('pactflow_role');
+    setToken(savedToken);
+    setRole(savedRole);
+    setCheckingAuth(false);
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const resp = await api.login(email, password);
+      localStorage.setItem('pactflow_token', resp.access_token);
+      localStorage.setItem('pactflow_role', resp.user.role);
+      setToken(resp.access_token);
+      setRole(resp.user.role);
+
+      // Route immediately into the main site
+      if (resp.user.role === 'freelancer') {
+        router.push('/freelancer');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please verify credentials.');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
-  return (
-    <div className="space-y-24 py-6">
-      {/* Hero Section */}
-      <section className="relative text-center max-w-4xl mx-auto space-y-8 pt-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-navy-850 border border-primary/30 text-primary text-xs font-medium shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-primary" />
-          <span>Next-Gen Freelance Infrastructure with Gemini 2.0 & PayPal Sandbox</span>
+  const setDemoRole = (selectedRole: 'client' | 'freelancer') => {
+    if (selectedRole === 'client') {
+      setEmail('client@pactflow.io');
+      setPassword('password123');
+    } else {
+      setEmail('freelancer@pactflow.io');
+      setPassword('password123');
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('pactflow_token');
+    localStorage.removeItem('pactflow_role');
+    setToken(null);
+    setRole(null);
+  };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center">
+        <div className="w-8 h-8 rounded-full border-2 border-purple-600 border-t-transparent animate-spin"></div>
+      </div>
+    );
+  }
+
+  // IF ALREADY LOGGED IN: Open Main Site Experience
+  if (token) {
+    return (
+      <div className="space-y-12 py-6">
+        {/* Welcome Back Glass Banner */}
+        <div className="glass-card p-8 rounded-3xl border border-white/90 shadow-glass flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-2 z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Authenticated Session Active ({role === 'freelancer' ? 'Freelancer' : 'Client'})
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-black text-[#231A12] tracking-tight">
+              Welcome to the <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">PACTFLOW</span> Portal
+            </h1>
+            <p className="text-sm text-[#6B5C4D] max-w-xl">
+              Your cryptographic agreement, milestone verification, and PayPal settlement workspace is ready.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 z-10">
+            <Link
+              href={role === 'freelancer' ? '/freelancer' : '/dashboard'}
+              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all"
+            >
+              Enter Main Dashboard
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-3 rounded-2xl bg-white/80 hover:bg-rose-50 text-[#6B5A49] hover:text-rose-700 border border-[#DFD4C3] hover:border-rose-200 text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out
+            </button>
+          </div>
         </div>
 
-        <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-white leading-tight">
-          Where Work Meets <span className="bg-gradient-to-r from-primary via-purple-400 to-secondary bg-clip-text text-transparent">Trust.</span>
-        </h1>
-
-        <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-          AI-powered agreements, objective deliverable verification, and PayPal milestone payment coordination. No escrow ambiguity. Complete cryptographic accountability.
-        </p>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+        {/* Quick Launch Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Link
             href="/dashboard"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold flex items-center justify-center gap-2.5 shadow-lg shadow-primary/25 transition-all group"
+            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
           >
-            Launch Client Hub
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-105 transition-transform">
+              <Layers className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-purple-700 transition-colors">Client Hub</h2>
+              <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
+                Create contracts with Gemini Pact Architect, inspect AI deliverable audits, and trigger PayPal invoices.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-1 text-xs font-bold text-purple-700">
+              Open Client Hub <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
           </Link>
+
           <Link
             href="/freelancer"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-navy-850 hover:bg-navy-800 text-slate-200 border border-navy-700/80 font-semibold flex items-center justify-center gap-2.5 transition-all"
+            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
           >
-            Freelancer Workspace
+            <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-800 group-hover:scale-105 transition-transform">
+              <FileCheck2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-amber-800 transition-colors">Freelancer Hub</h2>
+              <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
+                Submit milestone evidence, review Gemini audit reports, and track PayPal payment releases.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
+              Open Freelancer Hub <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
           </Link>
+
           <Link
             href="/ledger"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-navy-900/60 hover:bg-navy-850 text-slate-300 border border-navy-800 font-semibold flex items-center justify-center gap-2 transition-all font-mono text-sm"
+            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
           >
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            Inspect Trust Ledger
+            <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-800 group-hover:scale-105 transition-transform">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-emerald-800 transition-colors">Trust Ledger</h2>
+              <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
+                Verify cryptographic SHA-256 block chains, tamper detection, and payment event trails.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800">
+              Inspect Trust Ledger <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
           </Link>
         </div>
+      </div>
+    );
+  }
 
-        {/* Live System Pillars */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-12 border-t border-navy-800/80 text-left">
-          <div className="p-4 rounded-xl bg-navy-900/40 border border-navy-800">
-            <div className="text-xs font-mono text-primary uppercase tracking-wider">AI Agent A</div>
-            <div className="text-base font-bold text-white mt-1">Pact Architect</div>
-            <div className="text-xs text-slate-400 mt-1">Structured milestone contracts</div>
-          </div>
-          <div className="p-4 rounded-xl bg-navy-900/40 border border-navy-800">
-            <div className="text-xs font-mono text-secondary uppercase tracking-wider">AI Agent B</div>
-            <div className="text-base font-bold text-white mt-1">Evidence Inspector</div>
-            <div className="text-xs text-slate-400 mt-1">Objective zero-trust auditor</div>
-          </div>
-          <div className="p-4 rounded-xl bg-navy-900/40 border border-navy-800">
-            <div className="text-xs font-mono text-emerald-400 uppercase tracking-wider">Payments</div>
-            <div className="text-base font-bold text-white mt-1">PayPal Sandbox v2</div>
-            <div className="text-xs text-slate-400 mt-1">Authoritative Invoicing & Webhooks</div>
-          </div>
-          <div className="p-4 rounded-xl bg-navy-900/40 border border-navy-800">
-            <div className="text-xs font-mono text-purple-400 uppercase tracking-wider">Security</div>
-            <div className="text-base font-bold text-white mt-1">Trust Ledger</div>
-            <div className="text-xs text-slate-400 mt-1">SHA-256 immutable hash chain</div>
-          </div>
+  // IF NOT LOGGED IN: First Login Page Flow with Beige Glassmorphism
+  return (
+    <div className="relative max-w-4xl mx-auto py-8 space-y-10">
+      {/* Decorative Warm Glass Glowing Spheres */}
+      <div className="absolute top-10 left-1/4 w-72 h-72 bg-amber-300/25 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-40 right-10 w-80 h-80 bg-purple-300/25 rounded-full blur-3xl pointer-events-none -z-10" />
+
+      {/* Main Glass Portal Header */}
+      <div className="text-center space-y-3">
+        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/20 mx-auto">
+          <ShieldCheck className="w-9 h-9 text-white" />
         </div>
-      </section>
-
-      {/* Interactive Workflow Carousel / Progression */}
-      <section className="space-y-8">
-        <div className="text-center space-y-2">
-          <span className="text-xs font-mono text-primary uppercase tracking-wider">Continuous Proof-Of-Work Loop</span>
-          <h2 className="text-3xl font-bold text-white tracking-tight">The 6-Step PACTFLOW Lifecycle</h2>
-          <p className="text-sm text-slate-400 max-w-xl mx-auto">
-            From project conception to PayPal settlement, every state mutation is mathematically verifiable and protected by human approvals.
-          </p>
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-xs font-semibold shadow-sm">
+          <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+          <span>AI-Powered Milestone Coordination & PayPal Sandbox</span>
         </div>
+        <h1 className="text-4xl sm:text-5xl font-black text-[#231A12] tracking-tight">
+          Where Work Meets <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">Trust.</span>
+        </h1>
+        <p className="text-sm sm:text-base text-[#6B5C4D] max-w-xl mx-auto font-medium">
+          Sign in below to unlock your client or freelancer workspace, inspect cryptographic ledgers, and coordinate PayPal milestone settlements.
+        </p>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-1 space-y-2">
-            {workflowSteps.map((step, idx) => (
+      {/* Glass Login Card */}
+      <div className="max-w-md mx-auto">
+        <div className="glass-card p-8 sm:p-9 rounded-3xl border border-white/90 shadow-glass space-y-6">
+          <div className="space-y-1">
+            <h2 className="text-xl font-extrabold text-[#231A12]">Sign In to PACTFLOW</h2>
+            <p className="text-xs text-[#7A6C5B] font-medium">Select a role or enter your credentials</p>
+          </div>
+
+          {error && (
+            <div className="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-800 text-xs font-semibold backdrop-blur-md">
+              {error}
+            </div>
+          )}
+
+          {/* Quick Demo Selector */}
+          <div className="space-y-2">
+            <span className="text-[10px] font-bold text-[#6B5C4D] uppercase tracking-wider block">
+              1-Click Demo Profiles
+            </span>
+            <div className="grid grid-cols-2 gap-2.5">
               <button
-                key={idx}
-                onClick={() => setActiveWorkflowStep(idx)}
-                className={`w-full text-left p-4 rounded-xl border transition-all flex items-start justify-between ${
-                  activeWorkflowStep === idx
-                    ? 'bg-navy-850 border-primary shadow-md shadow-primary/10 text-white'
-                    : 'bg-navy-900/40 border-navy-800 text-slate-400 hover:bg-navy-850/50 hover:text-slate-200'
+                type="button"
+                onClick={() => setDemoRole('client')}
+                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md ${
+                  email === 'client@pactflow.io'
+                    ? 'bg-purple-50/90 border-purple-400 shadow-sm ring-2 ring-purple-500/20'
+                    : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
                 }`}
               >
-                <div>
-                  <div className="text-xs font-mono text-primary font-semibold">{step.actor}</div>
-                  <div className="text-sm font-bold mt-0.5">{step.title}</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#231A12]">Client</span>
+                  <span className="w-2 h-2 rounded-full bg-purple-600"></span>
                 </div>
-                <ChevronRight className={`w-4 h-4 mt-2 transition-transform ${activeWorkflowStep === idx ? 'rotate-90 text-primary' : 'text-slate-600'}`} />
+                <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">client@pactflow.io</p>
               </button>
-            ))}
-          </div>
 
-          <div className="md:col-span-2 glass-panel p-8 rounded-2xl border border-navy-800 flex flex-col justify-between">
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <span className="px-3 py-1 rounded-full text-xs font-mono bg-primary/10 border border-primary/20 text-primary font-medium">
-                  {workflowSteps[activeWorkflowStep].badge}
-                </span>
-                <span className="text-xs font-mono text-slate-400">Step {activeWorkflowStep + 1} of 6</span>
-              </div>
-
-              <h3 className="text-2xl font-bold text-white">
-                {workflowSteps[activeWorkflowStep].title}
-              </h3>
-
-              <p className="text-slate-300 leading-relaxed text-base">
-                {workflowSteps[activeWorkflowStep].desc}
-              </p>
-
-              {activeWorkflowStep === 3 && (
-                <div className="p-4 rounded-xl bg-navy-950 border border-amber-500/20 text-amber-200 text-xs flex gap-3">
-                  <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
-                  <div>
-                    <span className="font-semibold block text-amber-300">Evidence Inspector Principle:</span>
-                    Static screenshots are never accepted as proof of working code or interactive servers. Concrete runtime test outputs or live URLs are required.
-                  </div>
-                </div>
-              )}
-
-              {activeWorkflowStep === 5 && (
-                <div className="p-4 rounded-xl bg-navy-950 border border-emerald-500/20 text-emerald-200 text-xs flex gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                  <div>
-                    <span className="font-semibold block text-emerald-300">Authoritative PayPal Sandbox:</span>
-                    Payments are completed via PayPal's official hosted invoicing experience and reconciled via idempotent cryptographic webhooks.
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="pt-8 border-t border-navy-800 flex items-center justify-between">
-              <Link
-                href="/projects/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
-                className="text-sm text-primary hover:text-white font-medium flex items-center gap-1.5 transition-colors"
+              <button
+                type="button"
+                onClick={() => setDemoRole('freelancer')}
+                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md ${
+                  email === 'freelancer@pactflow.io'
+                    ? 'bg-amber-50/90 border-amber-400 shadow-sm ring-2 ring-amber-500/20'
+                    : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
+                }`}
               >
-                Inspect Live Seed Project Workspace
-                <ExternalLink className="w-4 h-4" />
-              </Link>
-              <div className="flex gap-2">
-                <button
-                  disabled={activeWorkflowStep === 0}
-                  onClick={() => setActiveWorkflowStep(Math.max(0, activeWorkflowStep - 1))}
-                  className="px-3 py-1.5 rounded-lg bg-navy-900 border border-navy-800 text-xs text-slate-300 disabled:opacity-40"
-                >
-                  Previous
-                </button>
-                <button
-                  disabled={activeWorkflowStep === workflowSteps.length - 1}
-                  onClick={() => setActiveWorkflowStep(Math.min(workflowSteps.length - 1, activeWorkflowStep + 1))}
-                  className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-hover text-xs text-white font-medium disabled:opacity-40"
-                >
-                  Next Step
-                </button>
-              </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-[#231A12]">Freelancer</span>
+                  <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                </div>
+                <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">freelancer@pactflow.io</p>
+              </button>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Feature Architecture Comparison */}
-      <section className="glass-panel p-8 rounded-2xl border border-navy-800 space-y-6">
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-bold text-white">Why PACTFLOW Over Fragmented Tools?</h2>
-          <p className="text-sm text-slate-400">Comparing traditional freelance workflows vs PACTFLOW's verifiable coordination architecture.</p>
-        </div>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#4B3F33]">Email Address</label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
+                  placeholder="name@example.com"
+                />
+              </div>
+            </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="border-b border-navy-800 text-xs font-mono uppercase text-slate-400">
-              <tr>
-                <th className="py-3 px-4">Dimension</th>
-                <th className="py-3 px-4 text-rose-400">Traditional Freelance Process</th>
-                <th className="py-3 px-4 text-primary">PACTFLOW Platform</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-navy-800/60 text-slate-300">
-              <tr>
-                <td className="py-3.5 px-4 font-semibold text-white">Requirement Scoping</td>
-                <td className="py-3.5 px-4 text-slate-400">Disorganized chat threads, unformatted emails</td>
-                <td className="py-3.5 px-4 text-emerald-400 font-medium">Gemini Pact Architect structured contracts</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-4 font-semibold text-white">Deliverable Review</td>
-                <td className="py-3.5 px-4 text-slate-400">Subjective client debates, missing files</td>
-                <td className="py-3.5 px-4 text-emerald-400 font-medium">Gemini Evidence Inspector objective criteria audit</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-4 font-semibold text-white">Payment Settlement</td>
-                <td className="py-3.5 px-4 text-slate-400">Manual wire requests or risky hold periods</td>
-                <td className="py-3.5 px-4 text-emerald-400 font-medium">PayPal Developer Sandbox Invoicing v2 API</td>
-              </tr>
-              <tr>
-                <td className="py-3.5 px-4 font-semibold text-white">Dispute History</td>
-                <td className="py-3.5 px-4 text-slate-400">He-said-she-said screenshot battles</td>
-                <td className="py-3.5 px-4 text-emerald-400 font-medium">Cryptographic Trust Ledger (SHA-256 hash chain)</td>
-              </tr>
-            </tbody>
-          </table>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-[#4B3F33]">Password</label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
+                  placeholder="••••••••••••"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group"
+            >
+              {loading ? (
+                <span>Authenticating & Opening Site...</span>
+              ) : (
+                <>
+                  <span>Sign In & Open Main Site</span>
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="pt-2 border-t border-[#EAE1D2] flex items-center justify-between text-xs text-[#7A6C5B]">
+            <span>Need an account?</span>
+            <Link href="/register" className="font-bold text-purple-700 hover:text-purple-900 transition-colors">
+              Register Here
+            </Link>
+          </div>
         </div>
-      </section>
+      </div>
+
+      {/* Protocol Architecture preview toggle */}
+      <div className="text-center pt-4">
+        <button
+          onClick={() => setShowArchitecture(!showArchitecture)}
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#6B5C4D] hover:text-[#231A12] transition-colors"
+        >
+          <Cpu className="w-4 h-4 text-purple-600" />
+          <span>{showArchitecture ? 'Hide Protocol Architecture' : 'View Core 6-Step Verification Workflow'}</span>
+        </button>
+      </div>
+
+      {showArchitecture && (
+        <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Step 1</span>
+            <h3 className="text-sm font-bold text-[#231A12]">Agreement Synthesis</h3>
+            <p className="text-xs text-[#6B5C4D]">Gemini Pact Architect writes precise acceptance criteria and milestone amounts.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Step 2</span>
+            <h3 className="text-sm font-bold text-[#231A12]">Dual Signing</h3>
+            <p className="text-xs text-[#6B5C4D]">Both client and freelancer sign with immutable SHA-256 ledger recording.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">Step 3</span>
+            <h3 className="text-sm font-bold text-[#231A12]">Deliverables Ingestion</h3>
+            <p className="text-xs text-[#6B5C4D]">Freelancer submits repositories, artifacts, SSRF-validated URLs, and test logs.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">Step 4</span>
+            <h3 className="text-sm font-bold text-[#231A12]">Evidence Inspector</h3>
+            <p className="text-xs text-[#6B5C4D]">Gemini audits proof objectively, rejecting fake screenshots for dynamic code.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">Step 5</span>
+            <h3 className="text-sm font-bold text-[#231A12]">Human Approval</h3>
+            <p className="text-xs text-[#6B5C4D]">Client retains sovereign control to approve milestone or request revisions.</p>
+          </div>
+          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+            <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">Step 6</span>
+            <h3 className="text-sm font-bold text-[#231A12]">PayPal Settlement</h3>
+            <p className="text-xs text-[#6B5C4D]">PayPal Invoicing v2 API generates invoice, finalized by webhook confirmation.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
