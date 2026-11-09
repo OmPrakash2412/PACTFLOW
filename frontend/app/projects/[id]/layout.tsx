@@ -8,3 +8,4 @@ export const metadata: Metadata = {
 export default function ProjectWorkspaceLayout({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
+
