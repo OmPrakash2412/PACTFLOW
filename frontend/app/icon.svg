@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="pactflow-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C3AED" />
+      <stop offset="50%" stop-color="#6366F1" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <filter id="soft-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#7C3AED" flood-opacity="0.25" />
+    </filter>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="#FAF7F2" />
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="none" stroke="#EAE1D2" stroke-width="1.5" />
+  <g filter="url(#soft-glow)">
+    <path d="M32 10 L48 16 V28 C48 39 41 48 32 53 C23 48 16 39 16 28 V16 Z" 
+          fill="url(#pactflow-grad)" />
+    <path d="M26 29 L30 33 L38 23" 
+          fill="none" 
+          stroke="#FFFFFF" 
+          stroke-width="3" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+  </g>
+</svg>

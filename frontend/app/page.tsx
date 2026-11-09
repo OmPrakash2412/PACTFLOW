@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Lock,
   Mail,
+  Phone,
   Layers,
   FileCheck2,
   DollarSign,
@@ -18,9 +19,11 @@ import {
   LogOut,
   User,
   Zap,
-  Cpu
+  Cpu,
+  FolderPlus
 } from 'lucide-react';
 import { api } from '../lib/api';
+import NotificationBanner from '../components/NotificationBanner';
 
 export default function HomeOrLoginPage() {
   const router = useRouter();
@@ -33,11 +36,13 @@ export default function HomeOrLoginPage() {
   const [password, setPassword] = useState('password123');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   // Workflow visual tab
   const [showArchitecture, setShowArchitecture] = useState(false);
 
   useEffect(() => {
+    document.title = 'PACTFLOW | Where Work Meets Trust';
     const savedToken = localStorage.getItem('pactflow_token');
     const savedRole = localStorage.getItem('pactflow_role');
     setToken(savedToken);
@@ -49,6 +54,7 @@ export default function HomeOrLoginPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
 
     try {
       const resp = await api.login(email, password);
@@ -56,15 +62,17 @@ export default function HomeOrLoginPage() {
       localStorage.setItem('pactflow_role', resp.user.role);
       setToken(resp.access_token);
       setRole(resp.user.role);
+      setSuccess(`Authenticated as ${resp.user.full_name || resp.user.role}! Loading hub...`);
 
-      // Route immediately into the main site
-      if (resp.user.role === 'freelancer') {
-        router.push('/freelancer');
-      } else {
-        router.push('/dashboard');
-      }
+      setTimeout(() => {
+        if (resp.user.role === 'freelancer') {
+          router.push('/freelancer');
+        } else {
+          router.push('/dashboard');
+        }
+      }, 500);
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please verify credentials.');
+      setError(err.message || 'Login failed. Please check your email and password.');
     } finally {
       setLoading(false);
     }
@@ -98,42 +106,42 @@ export default function HomeOrLoginPage() {
   // IF ALREADY LOGGED IN: Open Main Site Experience
   if (token) {
     return (
-      <div className="space-y-12 py-6">
+      <div className="space-y-10 py-4 w-full max-w-full overflow-hidden">
         {/* Welcome Back Glass Banner */}
-        <div className="glass-card p-8 rounded-3xl border border-white/90 shadow-glass flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-          <div className="space-y-2 z-10">
+        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-2 z-10 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Authenticated Session Active ({role === 'freelancer' ? 'Freelancer' : 'Client'})
+              Active Session ({role === 'freelancer' ? 'Freelancer Profile' : 'Client Profile'})
             </div>
-            <h1 className="text-3xl sm:text-4xl font-black text-[#231A12] tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-black text-[#231A12] tracking-tight">
               Welcome to the <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">PACTFLOW</span> Portal
             </h1>
-            <p className="text-sm text-[#6B5C4D] max-w-xl">
+            <p className="text-xs sm:text-sm text-[#6B5C4D]">
               Your cryptographic agreement, milestone verification, and PayPal settlement workspace is ready.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 z-10">
+          <div className="flex flex-wrap items-center gap-3 z-10 w-full sm:w-auto">
             <Link
               href={role === 'freelancer' ? '/freelancer' : '/dashboard'}
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center gap-2 transition-all"
+              className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all min-h-[44px]"
             >
-              Enter Main Dashboard
+              <span>Enter Main Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={handleLogout}
-              className="px-4 py-3 rounded-2xl bg-white/80 hover:bg-rose-50 text-[#6B5A49] hover:text-rose-700 border border-[#DFD4C3] hover:border-rose-200 text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+              className="px-4 py-3 rounded-2xl bg-white/80 hover:bg-rose-50 text-[#6B5A49] hover:text-rose-700 border border-[#DFD4C3] hover:border-rose-200 text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
             >
               <LogOut className="w-4 h-4" />
-              Sign Out
+              <span>Sign Out</span>
             </button>
           </div>
         </div>
 
         {/* Quick Launch Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           <Link
             href="/dashboard"
             className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
@@ -187,48 +195,77 @@ export default function HomeOrLoginPage() {
               Inspect Trust Ledger <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
+
+          <Link
+            href="/empty"
+            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 group-hover:scale-105 transition-transform">
+              <FolderPlus className="w-6 h-6" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-indigo-700 transition-colors">Empty States</h2>
+              <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
+                Review fallback empty states for newly initialized client workspaces and pending contracts.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-1 text-xs font-bold text-indigo-700">
+              Explore Showcase <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </Link>
         </div>
       </div>
     );
   }
 
-  // IF NOT LOGGED IN: First Login Page Flow with Beige Glassmorphism
+  // IF NOT LOGGED IN: First Login Page Flow with Light Beige Glassmorphism
   return (
-    <div className="relative max-w-4xl mx-auto py-8 space-y-10">
-      {/* Decorative Warm Glass Glowing Spheres */}
-      <div className="absolute top-10 left-1/4 w-72 h-72 bg-amber-300/25 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute top-40 right-10 w-80 h-80 bg-purple-300/25 rounded-full blur-3xl pointer-events-none -z-10" />
-
+    <div className="relative max-w-4xl mx-auto py-6 sm:py-8 space-y-8 sm:space-y-10 w-full overflow-hidden">
       {/* Main Glass Portal Header */}
-      <div className="text-center space-y-3">
-        <div className="w-16 h-16 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/20 mx-auto">
-          <ShieldCheck className="w-9 h-9 text-white" />
+      <div className="text-center space-y-3 px-3">
+        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/20 mx-auto">
+          <ShieldCheck className="w-8 sm:w-9 h-8 sm:h-9 text-white" />
         </div>
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-xs font-semibold shadow-sm">
-          <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+          <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
           <span>AI-Powered Milestone Coordination & PayPal Sandbox</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl font-black text-[#231A12] tracking-tight">
+        <h1 className="text-3xl sm:text-5xl font-black text-[#231A12] tracking-tight">
           Where Work Meets <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">Trust.</span>
         </h1>
-        <p className="text-sm sm:text-base text-[#6B5C4D] max-w-xl mx-auto font-medium">
+        <p className="text-xs sm:text-sm text-[#6B5C4D] max-w-xl mx-auto font-medium">
           Sign in below to unlock your client or freelancer workspace, inspect cryptographic ledgers, and coordinate PayPal milestone settlements.
         </p>
       </div>
 
+      {error && (
+        <div className="max-w-md mx-auto px-3">
+          <NotificationBanner
+            type="error"
+            title="Authentication Error"
+            message={error}
+            onClose={() => setError(null)}
+          />
+        </div>
+      )}
+
+      {success && (
+        <div className="max-w-md mx-auto px-3">
+          <NotificationBanner
+            type="success"
+            title="Session Authorized"
+            message={success}
+          />
+        </div>
+      )}
+
       {/* Glass Login Card */}
-      <div className="max-w-md mx-auto">
-        <div className="glass-card p-8 sm:p-9 rounded-3xl border border-white/90 shadow-glass space-y-6">
+      <div className="max-w-md mx-auto px-3 sm:px-0">
+        <div className="glass-card p-6 sm:p-9 rounded-3xl border border-white/90 shadow-glass space-y-6">
           <div className="space-y-1">
             <h2 className="text-xl font-extrabold text-[#231A12]">Sign In to PACTFLOW</h2>
-            <p className="text-xs text-[#7A6C5B] font-medium">Select a role or enter your credentials</p>
+            <p className="text-xs text-[#7A6C5B] font-medium">Select a role profile or enter credentials</p>
           </div>
-
-          {error && (
-            <div className="p-3.5 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-800 text-xs font-semibold backdrop-blur-md">
-              {error}
-            </div>
-          )}
 
           {/* Quick Demo Selector */}
           <div className="space-y-2">
@@ -239,7 +276,7 @@ export default function HomeOrLoginPage() {
               <button
                 type="button"
                 onClick={() => setDemoRole('client')}
-                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md ${
+                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
                   email === 'client@pactflow.io'
                     ? 'bg-purple-50/90 border-purple-400 shadow-sm ring-2 ring-purple-500/20'
                     : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
@@ -255,7 +292,7 @@ export default function HomeOrLoginPage() {
               <button
                 type="button"
                 onClick={() => setDemoRole('freelancer')}
-                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md ${
+                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
                   email === 'freelancer@pactflow.io'
                     ? 'bg-amber-50/90 border-amber-400 shadow-sm ring-2 ring-amber-500/20'
                     : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
@@ -281,7 +318,7 @@ export default function HomeOrLoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
-                  placeholder="name@example.com"
+                  placeholder="client@pactflow.io"
                 />
               </div>
             </div>
@@ -296,7 +333,7 @@ export default function HomeOrLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
-                  placeholder="••••••••••••"
+                  placeholder="password123"
                 />
               </div>
             </div>
@@ -304,7 +341,7 @@ export default function HomeOrLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group"
+              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group min-h-[44px]"
             >
               {loading ? (
                 <span>Authenticating & Opening Site...</span>
@@ -327,18 +364,18 @@ export default function HomeOrLoginPage() {
       </div>
 
       {/* Protocol Architecture preview toggle */}
-      <div className="text-center pt-4">
+      <div className="text-center pt-2 px-3">
         <button
           onClick={() => setShowArchitecture(!showArchitecture)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#6B5C4D] hover:text-[#231A12] transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-bold text-[#6B5C4D] hover:text-[#231A12] transition-colors p-2"
         >
-          <Cpu className="w-4 h-4 text-purple-600" />
+          <Cpu className="w-4 h-4 text-purple-600 shrink-0" />
           <span>{showArchitecture ? 'Hide Protocol Architecture' : 'View Core 6-Step Verification Workflow'}</span>
         </button>
       </div>
 
       {showArchitecture && (
-        <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <div className="glass-panel p-5 sm:p-8 rounded-3xl border border-white/90 shadow-glass grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 mx-3 sm:mx-0">
           <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
             <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Step 1</span>
             <h3 className="text-sm font-bold text-[#231A12]">Agreement Synthesis</h3>
@@ -371,6 +408,29 @@ export default function HomeOrLoginPage() {
           </div>
         </div>
       )}
+
+      {/* Direct Contact Bar */}
+      <div className="p-4 sm:p-5 rounded-2xl glass-card border border-white/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs mx-3 sm:mx-0">
+        <div className="flex items-center gap-2 text-[#6B5C4D]">
+          <Mail className="w-4 h-4 text-purple-700" />
+          <span>Questions or inquiries? Connect with our team:</span>
+        </div>
+        <div className="flex items-center gap-4 font-bold">
+          <a
+            href="mailto:support@pactflow.io"
+            className="text-purple-700 hover:text-purple-900 underline inline-flex items-center gap-1"
+          >
+            support@pactflow.io
+          </a>
+          <span className="text-[#DFD4C3]">•</span>
+          <a
+            href="tel:+18005557228"
+            className="text-amber-800 hover:text-amber-950 underline inline-flex items-center gap-1"
+          >
+            +1 (800) 555-7228
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

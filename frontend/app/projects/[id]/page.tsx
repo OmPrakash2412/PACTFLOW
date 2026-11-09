@@ -33,6 +33,8 @@ import {
   TrustStatus,
   PaymentCoordination
 } from '../../../types';
+import EmptyState from '../../../components/EmptyState';
+import NotificationBanner, { NotificationType } from '../../../components/NotificationBanner';
 
 export default function ProjectWorkspace() {
   const params = useParams();
@@ -64,13 +66,16 @@ export default function ProjectWorkspace() {
   const [reconcilingId, setReconcilingId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState<string | null>(null);
+  const [banner, setBanner] = useState<{ type: NotificationType; message: string; title?: string } | null>(null);
 
   const loadAllData = async () => {
     if (!projectId) return;
     try {
       const projData = await api.getProject(projectId);
       setProject(projData);
+      if (projData) {
+        document.title = `${projData.title} | Workspace | PACTFLOW`;
+      }
 
       const agList = await api.getAgreements(projectId);
       if (agList && agList.length > 0) {
@@ -78,10 +83,10 @@ export default function ProjectWorkspace() {
       }
 
       const msList = await api.getMilestones(projectId);
-      setMilestones(msList);
+      setMilestones(msList || []);
 
       const events = await api.getTrustEvents(projectId);
-      setTrustEvents(events);
+      setTrustEvents(events || []);
 
       const tStatus = await api.verifyTrustLedger(projectId);
       setTrustStatus(tStatus);
@@ -90,8 +95,13 @@ export default function ProjectWorkspace() {
         const coord = await api.getPaymentCoordination(projectId);
         setCoordination(coord);
       } catch (_) {}
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Error loading workspace data:', err);
+      setBanner({
+        type: 'warning',
+        title: 'Workspace Sync Notice',
+        message: err.message || 'Unable to connect to local backend. Showing cached state.'
+      });
     } finally {
       setLoading(false);
     }
@@ -105,10 +115,18 @@ export default function ProjectWorkspace() {
     if (!agreement) return;
     try {
       await api.acceptAgreement(agreement.id);
-      setNotification('Agreement digitally accepted! Sealed into Trust Ledger.');
+      setBanner({
+        type: 'success',
+        title: 'Agreement Signed',
+        message: 'Contract digitally accepted! Sealed into the Trust Ledger as a verified block.'
+      });
       await loadAllData();
     } catch (err: any) {
-      alert(err.message || 'Error signing agreement');
+      setBanner({
+        type: 'error',
+        title: 'Signing Error',
+        message: err.message || 'Unable to sign agreement.'
+      });
     }
   };
 
@@ -123,7 +141,7 @@ export default function ProjectWorkspace() {
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
 
-      const res = await api.submitDeliverable({
+      await api.submitDeliverable({
         milestone_id: selectedMilestone.id,
         title: deliverableTitle,
         description: deliverableDesc,
@@ -133,10 +151,18 @@ export default function ProjectWorkspace() {
       });
 
       setSelectedMilestone(null);
-      setNotification('Deliverable submitted! Gemini Evidence Inspector audit completed.');
+      setBanner({
+        type: 'success',
+        title: 'Evidence Ingested',
+        message: 'Deliverable submitted! Gemini Evidence Inspector audit has finished evaluating criteria.'
+      });
       await loadAllData();
     } catch (err: any) {
-      alert(err.message || 'Error submitting deliverable');
+      setBanner({
+        type: 'error',
+        title: 'Submission Error',
+        message: err.message || 'Error submitting deliverable.'
+      });
     } finally {
       setSubmittingDeliverable(false);
     }
@@ -144,11 +170,23 @@ export default function ProjectWorkspace() {
 
   const handleClientDecision = async (milestoneId: string, action: 'approve' | 'request_revisions') => {
     try {
-      await api.clientDecision(milestoneId, action, action === 'approve' ? 'All criteria satisfied.' : 'Please fix identified items.');
-      setNotification(action === 'approve' ? 'Milestone approved! Ready for PayPal Invoice.' : 'Revisions requested.');
+      await api.clientDecision(
+        milestoneId,
+        action,
+        action === 'approve' ? 'All criteria satisfied.' : 'Please fix identified items.'
+      );
+      setBanner({
+        type: 'success',
+        title: action === 'approve' ? 'Milestone Approved' : 'Revisions Dispatched',
+        message: action === 'approve' ? 'Milestone approved! Ready for PayPal invoice generation.' : 'Revision feedback logged and dispatched to freelancer.'
+      });
       await loadAllData();
     } catch (err: any) {
-      alert(err.message || 'Error updating milestone');
+      setBanner({
+        type: 'error',
+        title: 'Decision Error',
+        message: err.message || 'Error updating milestone decision.'
+      });
     }
   };
 
@@ -156,10 +194,18 @@ export default function ProjectWorkspace() {
     setInvoicingLoading(true);
     try {
       const inv = await api.generateInvoice(milestoneId);
-      setNotification(`PayPal invoice ${inv.paypal_invoice_id || inv.id} created & sent!`);
+      setBanner({
+        type: 'success',
+        title: 'Invoice Dispatched',
+        message: `PayPal invoice ${inv.paypal_invoice_id || inv.id} created and sent through Developer Sandbox!`
+      });
       await loadAllData();
     } catch (err: any) {
-      alert(err.message || 'Error generating invoice');
+      setBanner({
+        type: 'error',
+        title: 'Invoicing Error',
+        message: err.message || 'Error generating PayPal invoice.'
+      });
     } finally {
       setInvoicingLoading(false);
     }
@@ -173,10 +219,18 @@ export default function ProjectWorkspace() {
         const rep = await api.getVerificationReport(deliv.id);
         setActiveReport(rep);
       } else {
-        alert('No deliverable has been submitted for this milestone yet.');
+        setBanner({
+          type: 'info',
+          title: 'No Deliverables Yet',
+          message: 'No deliverable has been submitted for this milestone yet.'
+        });
       }
     } catch (err: any) {
-      alert('Could not load report: ' + err.message);
+      setBanner({
+        type: 'error',
+        title: 'Report Error',
+        message: 'Could not load verification report: ' + err.message
+      });
     } finally {
       setReportLoading(false);
     }
@@ -205,11 +259,19 @@ export default function ProjectWorkspace() {
       });
 
       if (res.ok) {
-        setNotification('PayPal Sandbox payment confirmed via authoritative webhook!');
+        setBanner({
+          type: 'success',
+          title: 'Settlement Confirmed',
+          message: 'PayPal Sandbox payment confirmed via authoritative webhook and sealed into Trust Ledger!'
+        });
         await loadAllData();
       }
     } catch (err: any) {
-      alert('Simulation error: ' + err.message);
+      setBanner({
+        type: 'error',
+        title: 'Simulation Error',
+        message: 'Simulation error: ' + err.message
+      });
     } finally {
       setReconcilingId(null);
     }
@@ -226,24 +288,27 @@ export default function ProjectWorkspace() {
 
   if (!project) {
     return (
-      <div className="py-24 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-[#231A12]">Project Not Found</h2>
-        <Link href="/dashboard" className="text-purple-700 hover:underline text-sm font-mono font-bold">
-          ← Return to Dashboard
-        </Link>
+      <div className="py-16 text-center">
+        <EmptyState
+          icon={Layers}
+          title="Project Not Found"
+          description="The requested project identifier could not be retrieved from the database."
+          actionLabel="Return to Dashboard"
+          actionHref="/dashboard"
+        />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 py-2">
-      {/* Breadcrumb & Notifications */}
+    <div className="space-y-8 py-2 w-full max-w-full overflow-hidden">
+      {/* Breadcrumb & Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAE1D2] pb-5">
         <div className="space-y-1">
           <Link href="/dashboard" className="inline-flex items-center gap-1.5 text-xs text-[#7A6C5B] hover:text-[#231A12] font-mono font-bold transition-colors">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Dashboard
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl sm:text-3xl font-black text-[#231A12] tracking-tight">{project.title}</h1>
             <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
               {project.status.toUpperCase()}
@@ -256,32 +321,29 @@ export default function ProjectWorkspace() {
 
         {trustStatus && (
           <div className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/80 border border-[#EAE1D2] text-xs font-mono shadow-sm">
-            <ShieldCheck className="w-4 h-4 text-emerald-700" />
+            <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
             <span className="text-[#6B5C4D]">Trust Ledger:</span>
             <span className="text-emerald-700 font-bold">{trustStatus.total_events} Block(s) Verified</span>
           </div>
         )}
       </div>
 
-      {notification && (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-300 text-emerald-900 text-sm flex items-center justify-between shadow-sm">
-          <span className="flex items-center gap-2 font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-            {notification}
-          </span>
-          <button onClick={() => setNotification(null)} className="text-xs text-emerald-700 hover:underline font-bold">
-            Dismiss
-          </button>
-        </div>
+      {banner && (
+        <NotificationBanner
+          type={banner.type}
+          title={banner.title}
+          message={banner.message}
+          onClose={() => setBanner(null)}
+        />
       )}
 
-      {/* Workspace Tabs */}
-      <div className="flex border-b border-[#EAE1D2] space-x-1 sm:space-x-3 overflow-x-auto text-sm font-semibold">
+      {/* Responsive Workspace Tabs (touch-friendly, no overflow) */}
+      <div className="flex border-b border-[#EAE1D2] space-x-1 sm:space-x-3 overflow-x-auto text-xs sm:text-sm font-semibold max-w-full pb-0.5">
         {[
-          { key: 'overview', label: 'Overview & AI Coordinator', icon: Layers },
-          { key: 'agreement', label: 'Agreement & Gemini Contract', icon: FileText },
+          { key: 'overview', label: 'Overview & Coordinator', icon: Layers },
+          { key: 'agreement', label: 'Agreement & Terms', icon: FileText },
           { key: 'milestones', label: `Milestones (${milestones.length})`, icon: CheckCircle2 },
-          { key: 'invoices', label: 'PayPal Settlement & Invoices', icon: CreditCard },
+          { key: 'invoices', label: 'PayPal Settlement', icon: CreditCard },
           { key: 'ledger', label: `Trust Ledger (${trustEvents.length})`, icon: ShieldCheck },
         ].map((tab) => {
           const Icon = tab.icon;
@@ -290,14 +352,14 @@ export default function ProjectWorkspace() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key as any)}
-              className={`flex items-center gap-2 px-4 py-3 border-b-2 font-bold whitespace-nowrap transition-colors ${
+              className={`flex items-center gap-2 px-3.5 py-3 border-b-2 font-bold whitespace-nowrap transition-colors min-h-[44px] ${
                 isActive
-                  ? 'border-purple-600 text-purple-700 bg-white/70 rounded-t-xl'
+                  ? 'border-purple-600 text-purple-700 bg-white/80 rounded-t-xl'
                   : 'border-transparent text-[#7A6C5B] hover:text-[#231A12] hover:bg-white/40'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              {tab.label}
+              <Icon className="w-4 h-4 shrink-0" />
+              <span>{tab.label}</span>
             </button>
           );
         })}
@@ -308,9 +370,9 @@ export default function ProjectWorkspace() {
         <div className="space-y-6">
           {coordination && (
             <div className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between flex-wrap gap-2">
                 <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-purple-700" />
+                  <Sparkles className="w-4 h-4 text-purple-700 shrink-0" />
                   Gemini Payment Coordinator Realtime Analysis
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
@@ -338,8 +400,8 @@ export default function ProjectWorkspace() {
                 <ul className="space-y-1.5">
                   {coordination.action_items.map((action, idx) => (
                     <li key={idx} className="text-xs text-[#4B3F33] flex items-center gap-2 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600"></span>
-                      {action}
+                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0"></span>
+                      <span>{action}</span>
                     </li>
                   ))}
                 </ul>
@@ -366,7 +428,7 @@ export default function ProjectWorkspace() {
       {activeTab === 'agreement' && (
         <div className="space-y-6">
           {agreement ? (
-            <div className="glass-card p-8 rounded-3xl border border-white/90 shadow-glass space-y-8">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass space-y-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAE1D2] pb-5">
                 <div>
                   <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider">Version {agreement.version}</span>
@@ -374,12 +436,12 @@ export default function ProjectWorkspace() {
                   <p className="text-xs text-[#7A6C5B] font-mono mt-1">Status: {agreement.status.toUpperCase()}</p>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-wrap">
                   <div className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-semibold ${agreement.is_client_accepted ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-white border-[#DFD4C3] text-[#7A6C5B]'}`}>
-                    Client: {agreement.is_client_accepted ? 'Accepted ✓' : 'Pending'}
+                    Client: {agreement.is_client_accepted ? 'Accepted ✓' : 'Pending Signature'}
                   </div>
                   <div className={`px-3 py-1.5 rounded-xl border text-xs font-mono font-semibold ${agreement.is_freelancer_accepted ? 'bg-emerald-50 border-emerald-300 text-emerald-800' : 'bg-white border-[#DFD4C3] text-[#7A6C5B]'}`}>
-                    Freelancer: {agreement.is_freelancer_accepted ? 'Accepted ✓' : 'Pending'}
+                    Freelancer: {agreement.is_freelancer_accepted ? 'Accepted ✓' : 'Pending Signature'}
                   </div>
                 </div>
               </div>
@@ -395,8 +457,8 @@ export default function ProjectWorkspace() {
               {/* Budget Allocation Table */}
               <div className="space-y-3">
                 <h3 className="text-base font-bold text-[#231A12]">2. Budget Allocation & Milestones</h3>
-                <div className="overflow-x-auto rounded-2xl border border-[#EAE1D2]">
-                  <table className="w-full text-left text-xs">
+                <div className="overflow-x-auto rounded-2xl border border-[#EAE1D2] max-w-full">
+                  <table className="w-full text-left text-xs min-w-[320px]">
                     <thead className="bg-white/80 text-[#7A6C5B] font-mono uppercase font-bold">
                       <tr>
                         <th className="py-2.5 px-4">Milestone</th>
@@ -457,7 +519,7 @@ export default function ProjectWorkspace() {
                 </div>
                 <button
                   onClick={handleAcceptAgreement}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 transition-all"
+                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 transition-all min-h-[44px]"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Digitally Sign & Accept Agreement
@@ -465,26 +527,24 @@ export default function ProjectWorkspace() {
               </div>
             </div>
           ) : (
-            <div className="glass-card p-12 rounded-3xl border border-white/90 shadow-glass text-center space-y-4">
-              <Sparkles className="w-8 h-8 text-purple-700 mx-auto" />
-              <h3 className="text-lg font-bold text-[#231A12]">No Agreement Synthesized Yet</h3>
-              <p className="text-xs text-[#6B5C4D] max-w-md mx-auto">
-                Gemini Pact Architect can convert the project requirements into a verifiable agreement right now.
-              </p>
-              <button
-                onClick={async () => {
-                  try {
-                    await api.generateAgreement(projectId);
-                    await loadAllData();
-                  } catch (e: any) {
-                    alert(e.message);
-                  }
-                }}
-                className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
-              >
-                Draft Agreement with Gemini
-              </button>
-            </div>
+            <EmptyState
+              icon={FileText}
+              title="No Agreement Synthesized Yet"
+              description="Gemini Pact Architect can convert the project requirements and budget into an authoritative milestone contract."
+              actionLabel="Draft Agreement with Gemini"
+              onAction={async () => {
+                try {
+                  await api.generateAgreement(projectId);
+                  await loadAllData();
+                } catch (e: any) {
+                  setBanner({
+                    type: 'error',
+                    title: 'Synthesis Error',
+                    message: e.message || 'Error generating agreement.'
+                  });
+                }
+              }}
+            />
           )}
         </div>
       )}
@@ -497,126 +557,136 @@ export default function ProjectWorkspace() {
             <p className="text-xs text-[#6B5C4D]">Freelancer submits deliverables. Gemini audits evidence. Client gives final approval.</p>
           </div>
 
-          <div className="space-y-4">
-            {milestones.map((m) => (
-              <div key={m.id} className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EAE1D2] pb-3">
-                  <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center font-mono text-xs font-black text-purple-700">
-                      {m.sequence_order}
+          {milestones.length === 0 ? (
+            <EmptyState
+              icon={CheckCircle2}
+              title="No Milestones Generated"
+              description="Milestones are generated when an agreement is synthesized by the Gemini Pact Architect."
+              actionLabel="Open Agreement Tab"
+              onAction={() => setActiveTab('agreement')}
+            />
+          ) : (
+            <div className="space-y-4">
+              {milestones.map((m) => (
+                <div key={m.id} className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EAE1D2] pb-3">
+                    <div className="flex items-center gap-3">
+                      <span className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center font-mono text-xs font-black text-purple-700 shrink-0">
+                        {m.sequence_order}
+                      </span>
+                      <div>
+                        <h3 className="text-base font-bold text-[#231A12]">{m.title}</h3>
+                        <span className="text-xs font-mono text-[#7A6C5B] font-bold">${m.amount} {m.currency}</span>
+                      </div>
+                    </div>
+
+                    <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold self-start sm:self-auto ${
+                      m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
+                      m.status === 'approved' ? 'bg-purple-100 text-purple-800 border border-purple-300' :
+                      m.status === 'submitted' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
+                      'bg-white text-[#7A6C5B] border border-[#DFD4C3]'
+                    }`}>
+                      {m.status.replace('_', ' ')}
                     </span>
-                    <div>
-                      <h3 className="text-base font-bold text-[#231A12]">{m.title}</h3>
-                      <span className="text-xs font-mono text-[#7A6C5B] font-bold">${m.amount} {m.currency}</span>
-                    </div>
                   </div>
 
-                  <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold self-start sm:self-auto ${
-                    m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                    m.status === 'approved' ? 'bg-purple-100 text-purple-800 border border-purple-300' :
-                    m.status === 'submitted' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
-                    'bg-white text-[#7A6C5B] border border-[#DFD4C3]'
-                  }`}>
-                    {m.status.replace('_', ' ')}
-                  </span>
-                </div>
+                  <p className="text-xs text-[#4B3F33] font-medium">{m.description}</p>
 
-                <p className="text-xs text-[#4B3F33] font-medium">{m.description}</p>
+                  {/* Acceptance Criteria */}
+                  <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-2">
+                    <span className="text-xs font-mono text-[#7A6C5B] uppercase font-bold">Agreed Acceptance Criteria:</span>
+                    <ul className="space-y-1">
+                      {m.acceptance_criteria.map((c, idx) => (
+                        <li key={idx} className="text-xs text-[#4B3F33] flex items-center gap-2 font-medium">
+                          <Check className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                          <span>{c}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                {/* Acceptance Criteria */}
-                <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-2">
-                  <span className="text-xs font-mono text-[#7A6C5B] uppercase font-bold">Agreed Acceptance Criteria:</span>
-                  <ul className="space-y-1">
-                    {m.acceptance_criteria.map((c, idx) => (
-                      <li key={idx} className="text-xs text-[#4B3F33] flex items-center gap-2 font-medium">
-                        <Check className="w-3.5 h-3.5 text-purple-700 shrink-0" />
-                        <span>{c}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                  {/* Actions per state */}
+                  <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap gap-2">
+                      {['pending', 'in_progress', 'changes_requested'].includes(m.status) && (
+                        <button
+                          onClick={() => {
+                            setSelectedMilestone(m);
+                            setDeliverableTitle(`Deliverables for ${m.title}`);
+                          }}
+                          className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
+                        >
+                          <Upload className="w-3.5 h-3.5" />
+                          Submit Deliverable Evidence
+                        </button>
+                      )}
 
-                {/* Actions per state */}
-                <div className="pt-2 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex gap-2">
-                    {['pending', 'in_progress', 'changes_requested'].includes(m.status) && (
+                      {m.has_deliverable && (
+                        <button
+                          onClick={() => handleViewReport(m)}
+                          className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] hover:border-purple-300 text-[#231A12] hover:text-purple-700 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm min-h-[40px]"
+                        >
+                          <FileCheck className="w-3.5 h-3.5 text-purple-700" />
+                          Inspect AI Evidence Audit
+                        </button>
+                      )}
+                    </div>
+
+                    {m.status === 'submitted' && (
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <button
+                          onClick={() => handleClientDecision(m.id, 'request_revisions')}
+                          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold transition-all min-h-[40px]"
+                        >
+                          Request Revisions
+                        </button>
+                        <button
+                          onClick={() => handleClientDecision(m.id, 'approve')}
+                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all min-h-[40px]"
+                        >
+                          <CheckCircle2 className="w-3.5 h-3.5" />
+                          Approve Milestone
+                        </button>
+                      </div>
+                    )}
+
+                    {m.status === 'approved' && (
                       <button
-                        onClick={() => {
-                          setSelectedMilestone(m);
-                          setDeliverableTitle(`Deliverables for ${m.title}`);
-                        }}
-                        className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                        disabled={invoicingLoading}
+                        onClick={() => handleGenerateInvoice(m.id)}
+                        className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-600/20 transition-all min-h-[40px]"
                       >
-                        <Upload className="w-3.5 h-3.5" />
-                        Submit Deliverable Evidence
+                        <CreditCard className="w-3.5 h-3.5" />
+                        Generate PayPal Sandbox Invoice
                       </button>
                     )}
 
-                    {m.has_deliverable && (
-                      <button
-                        onClick={() => handleViewReport(m)}
-                        className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] hover:border-purple-300 text-[#231A12] hover:text-purple-700 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm"
+                    {m.status === 'invoiced' && m.paypal_hosted_url && (
+                      <a
+                        href={m.paypal_hosted_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm min-h-[40px]"
                       >
-                        <FileCheck className="w-3.5 h-3.5 text-purple-700" />
-                        Inspect AI Evidence Audit
-                      </button>
+                        Pay in PayPal Sandbox <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     )}
                   </div>
-
-                  {m.status === 'submitted' && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleClientDecision(m.id, 'request_revisions')}
-                        className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold transition-all"
-                      >
-                        Request Revisions
-                      </button>
-                      <button
-                        onClick={() => handleClientDecision(m.id, 'approve')}
-                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all"
-                      >
-                        <CheckCircle2 className="w-3.5 h-3.5" />
-                        Approve Milestone
-                      </button>
-                    </div>
-                  )}
-
-                  {m.status === 'approved' && (
-                    <button
-                      disabled={invoicingLoading}
-                      onClick={() => handleGenerateInvoice(m.id)}
-                      className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-600/20 transition-all"
-                    >
-                      <CreditCard className="w-3.5 h-3.5" />
-                      Generate PayPal Sandbox Invoice
-                    </button>
-                  )}
-
-                  {m.status === 'invoiced' && m.paypal_hosted_url && (
-                    <a
-                      href={m.paypal_hosted_url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm"
-                    >
-                      Pay in PayPal Sandbox <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  )}
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Deliverable Submission Modal */}
           {selectedMilestone && (
-            <div className="fixed inset-0 z-50 bg-[#231A12]/40 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 bg-[#231A12]/50 backdrop-blur-md flex items-center justify-center p-4">
               <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 max-w-2xl w-full space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="flex items-center justify-between border-b border-[#EAE1D2] pb-3">
                   <h3 className="text-lg font-bold text-[#231A12] flex items-center gap-2">
                     <Upload className="w-5 h-5 text-amber-700" />
                     Submit Evidence for {selectedMilestone.title}
                   </h3>
-                  <button onClick={() => setSelectedMilestone(null)} className="text-[#7A6C5B] hover:text-[#231A12] font-bold">✕</button>
+                  <button onClick={() => setSelectedMilestone(null)} className="text-[#7A6C5B] hover:text-[#231A12] font-bold p-1">✕</button>
                 </div>
 
                 <form onSubmit={handleSubmitDeliverable} className="space-y-4">
@@ -627,6 +697,7 @@ export default function ProjectWorkspace() {
                       required
                       value={deliverableTitle}
                       onChange={(e) => setDeliverableTitle(e.target.value)}
+                      placeholder="Title (e.g. Completed JWT Authentication Middleware)"
                       className="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
                     />
                   </div>
@@ -638,7 +709,7 @@ export default function ProjectWorkspace() {
                       rows={3}
                       value={deliverableDesc}
                       onChange={(e) => setDeliverableDesc(e.target.value)}
-                      placeholder="Detail implemented features, tests executed, and code references..."
+                      placeholder="Detail implemented features, test suite outcomes, and architecture changes..."
                       className="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-medium text-[#231A12]"
                     />
                   </div>
@@ -649,7 +720,7 @@ export default function ProjectWorkspace() {
                       rows={2}
                       value={deliverableFiles}
                       onChange={(e) => setDeliverableFiles(e.target.value)}
-                      placeholder="https://github.com/org/repo/pull/4"
+                      placeholder="https://github.com/organization/repository/pull/12"
                       className="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-mono font-medium text-[#231A12]"
                     />
                   </div>
@@ -660,7 +731,7 @@ export default function ProjectWorkspace() {
                       type="url"
                       value={deliverableDemo}
                       onChange={(e) => setDeliverableDemo(e.target.value)}
-                      placeholder="https://staging.example.com"
+                      placeholder="https://staging.pactflow.io/demo"
                       className="w-full px-3.5 py-2.5 rounded-xl glass-input text-xs font-mono font-medium text-[#231A12]"
                     />
                   </div>
@@ -693,17 +764,17 @@ export default function ProjectWorkspace() {
 
           {/* Evidence Inspector Report Modal */}
           {activeReport && (
-            <div className="fixed inset-0 z-50 bg-[#231A12]/40 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-50 bg-[#231A12]/50 backdrop-blur-md flex items-center justify-center p-4">
               <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 max-w-3xl w-full space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="flex items-center justify-between border-b border-[#EAE1D2] pb-3">
                   <div>
                     <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider">Gemini Evidence Audit</span>
                     <h3 className="text-xl font-black text-[#231A12] mt-0.5">Verification Report</h3>
                   </div>
-                  <button onClick={() => setActiveReport(null)} className="text-[#7A6C5B] hover:text-[#231A12] font-bold">✕</button>
+                  <button onClick={() => setActiveReport(null)} className="text-[#7A6C5B] hover:text-[#231A12] font-bold p-1">✕</button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/70 border border-[#EAE1D2]">
+                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] flex-wrap gap-2">
                   <div>
                     <div className="text-xs font-mono text-[#7A6C5B] font-bold">OVERALL VERDICT</div>
                     <div className={`text-lg font-black uppercase mt-0.5 ${
@@ -729,7 +800,7 @@ export default function ProjectWorkspace() {
                   <div className="space-y-2">
                     {activeReport.criteria_analysis.map((crit, idx) => (
                       <div key={idx} className="p-3.5 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1 text-xs">
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between flex-wrap gap-1">
                           <span className="font-bold text-[#231A12]">{crit.criterion}</span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold ${
                             crit.verdict === 'satisfied' ? 'bg-emerald-100 text-emerald-800' :
@@ -772,7 +843,7 @@ export default function ProjectWorkspace() {
       {/* TAB 4: PAYPAL SETTLEMENT & INVOICES */}
       {activeTab === 'invoices' && (
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <h2 className="text-xl font-bold text-[#231A12]">PayPal Sandbox Settlements</h2>
               <p className="text-xs text-[#6B5C4D]">Real Invoicing API v2 execution. Funds flow directly through PayPal's sandbox gateway.</p>
@@ -782,59 +853,69 @@ export default function ProjectWorkspace() {
             </div>
           </div>
 
-          <div className="glass-card rounded-3xl border border-white/90 shadow-glass divide-y divide-[#EAE1D2]">
-            {milestones.filter(m => ['approved', 'invoiced', 'paid'].includes(m.status)).map((m) => (
-              <div key={m.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-base font-bold text-[#231A12]">{m.title}</h3>
-                    <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
-                      m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
-                    }`}>
-                      {m.status.toUpperCase()}
-                    </span>
-                  </div>
-                  <div className="text-xs font-mono text-[#7A6C5B]">
-                    Amount: <strong className="text-[#231A12]">${m.amount} {m.currency}</strong>
-                  </div>
-                  {m.paypal_hosted_url && (
-                    <div className="text-[11px] font-mono text-[#8C7D6C] truncate max-w-md">
-                      Hosted Gateway: {m.paypal_hosted_url}
+          {milestones.filter(m => ['approved', 'invoiced', 'paid'].includes(m.status)).length === 0 ? (
+            <EmptyState
+              icon={CreditCard}
+              title="No Invoiced Milestones"
+              description="PayPal invoices are minted once the client reviews deliverable proof and approves the milestone."
+              actionLabel="Review Milestones"
+              onAction={() => setActiveTab('milestones')}
+            />
+          ) : (
+            <div className="glass-card rounded-3xl border border-white/90 shadow-glass divide-y divide-[#EAE1D2]">
+              {milestones.filter(m => ['approved', 'invoiced', 'paid'].includes(m.status)).map((m) => (
+                <div key={m.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <h3 className="text-base font-bold text-[#231A12]">{m.title}</h3>
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
+                        m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+                      }`}>
+                        {m.status.toUpperCase()}
+                      </span>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {m.status === 'invoiced' && m.paypal_hosted_url && (
-                    <>
-                      <a
-                        href={m.paypal_hosted_url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
-                      >
-                        Launch PayPal Checkout <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                      <button
-                        disabled={reconcilingId === m.invoice_id}
-                        onClick={() => m.invoice_id && simulatePayPalPayment(m.invoice_id)}
-                        className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] text-xs font-mono font-bold text-[#231A12] transition-colors"
-                      >
-                        {reconcilingId === m.invoice_id ? 'Simulating...' : 'Simulate Webhook Paid'}
-                      </button>
-                    </>
-                  )}
-
-                  {m.status === 'paid' && (
-                    <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-800 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-700" />
-                      Authoritative Payment Sealed
+                    <div className="text-xs font-mono text-[#7A6C5B]">
+                      Amount: <strong className="text-[#231A12]">${m.amount} {m.currency}</strong>
                     </div>
-                  )}
+                    {m.paypal_hosted_url && (
+                      <div className="text-[11px] font-mono text-[#8C7D6C] truncate max-w-md">
+                        Hosted Gateway: {m.paypal_hosted_url}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {m.status === 'invoiced' && m.paypal_hosted_url && (
+                      <>
+                        <a
+                          href={m.paypal_hosted_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                        >
+                          Launch PayPal Checkout <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          disabled={reconcilingId === m.invoice_id}
+                          onClick={() => m.invoice_id && simulatePayPalPayment(m.invoice_id)}
+                          className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] text-xs font-mono font-bold text-[#231A12] transition-colors"
+                        >
+                          {reconcilingId === m.invoice_id ? 'Simulating...' : 'Simulate Webhook Paid'}
+                        </button>
+                      </>
+                    )}
+
+                    {m.status === 'paid' && (
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-800 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-700" />
+                        Authoritative Payment Sealed
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
@@ -846,30 +927,40 @@ export default function ProjectWorkspace() {
             <p className="text-xs text-[#6B5C4D]">Isolated per-project SHA-256 block succession sealing contracts, submissions, and payments.</p>
           </div>
 
-          <div className="space-y-3">
-            {trustEvents.map((e) => (
-              <div key={e.id} className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass space-y-2 text-xs font-mono">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-purple-100 text-purple-800 font-bold border border-purple-200">
-                      BLOCK #{e.sequence_number}
-                    </span>
-                    <span className="text-[#231A12] font-bold">{e.event_type}</span>
+          {trustEvents.length === 0 ? (
+            <EmptyState
+              icon={ShieldCheck}
+              title="No Ledger Blocks Recorded"
+              description="Signing an agreement seals Genesis Block #1 into this project's cryptographic hash chain."
+              actionLabel="View Agreement Tab"
+              onAction={() => setActiveTab('agreement')}
+            />
+          ) : (
+            <div className="space-y-3">
+              {trustEvents.map((e) => (
+                <div key={e.id} className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass space-y-2 text-xs font-mono">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-purple-100 text-purple-800 font-bold border border-purple-200">
+                        BLOCK #{e.sequence_number}
+                      </span>
+                      <span className="text-[#231A12] font-bold">{e.event_type}</span>
+                    </div>
+                    <span className="text-[#8C7D6C] text-[11px]">{new Date(e.timestamp).toLocaleString()}</span>
                   </div>
-                  <span className="text-[#8C7D6C]">{new Date(e.timestamp).toLocaleString()}</span>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] text-[#6B5C4D] pt-1">
-                  <div className="truncate">Prev Hash: <span className="text-[#8C7D6C]">{e.prev_hash}</span></div>
-                  <div className="truncate">Current Hash: <span className="text-emerald-700 font-bold">{e.current_hash}</span></div>
-                </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px] text-[#6B5C4D] pt-1">
+                    <div className="break-all">Prev Hash: <span className="text-[#8C7D6C]">{e.prev_hash}</span></div>
+                    <div className="break-all">Current Hash: <span className="text-emerald-700 font-bold">{e.current_hash}</span></div>
+                  </div>
 
-                <div className="p-3.5 rounded-xl bg-white/70 border border-[#EAE1D2] text-[11px] text-[#231A12] overflow-x-auto shadow-inner">
-                  <pre>{JSON.stringify(e.payload, null, 2)}</pre>
+                  <div className="p-3.5 rounded-xl bg-white/70 border border-[#EAE1D2] text-[11px] text-[#231A12] overflow-x-auto shadow-inner max-w-full">
+                    <pre className="max-w-full overflow-x-auto">{JSON.stringify(e.payload, null, 2)}</pre>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
