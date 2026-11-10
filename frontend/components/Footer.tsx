@@ -10,8 +10,8 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-purple-600 to-amber-500 flex items-center justify-center shadow-sm text-white">
-                <ShieldCheck className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl bg-stone-900 border border-stone-800 flex items-center justify-center shadow-sm">
+                <ShieldCheck className="w-4 h-4 text-amber-500" />
               </div>
               <span className="font-extrabold text-[#231A12] text-lg tracking-tight">PACTFLOW</span>
             </div>
@@ -31,27 +31,27 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs font-semibold">
               <li>
-                <Link href="/dashboard" className="hover:text-purple-700 transition-colors">
+                <Link href="/dashboard" className="text-stone-600 hover:text-stone-900 transition-colors">
                   Client Hub & Agreements
                 </Link>
               </li>
               <li>
-                <Link href="/freelancer" className="hover:text-purple-700 transition-colors">
+                <Link href="/freelancer" className="text-stone-600 hover:text-stone-900 transition-colors">
                   Freelancer Hub & Evidence
                 </Link>
               </li>
               <li>
-                <Link href="/ledger" className="hover:text-purple-700 transition-colors">
+                <Link href="/ledger" className="text-stone-600 hover:text-stone-900 transition-colors">
                   SHA-256 Trust Ledger
                 </Link>
               </li>
               <li>
-                <Link href="/projects/new" className="hover:text-purple-700 transition-colors">
+                <Link href="/projects/new" className="text-stone-600 hover:text-stone-900 transition-colors">
                   Synthesize Project with Gemini
                 </Link>
               </li>
               <li>
-                <Link href="/empty" className="hover:text-purple-700 transition-colors">
+                <Link href="/empty" className="text-stone-600 hover:text-stone-900 transition-colors">
                   Empty State Showcase
                 </Link>
               </li>
@@ -105,9 +105,9 @@ export default function Footer() {
                 <span className="text-[10px] text-[#8C7D6C] block uppercase font-mono">Email Support</span>
                 <a
                   href="mailto:support@pactflow.io"
-                  className="font-bold text-purple-700 hover:text-purple-900 transition-colors inline-flex items-center gap-1.5"
+                  className="font-bold text-stone-900 hover:text-amber-800 transition-colors inline-flex items-center gap-1.5"
                 >
-                  <Mail className="w-3.5 h-3.5 text-purple-700" />
+                  <Mail className="w-3.5 h-3.5 text-stone-700" />
                   <span>support@pactflow.io</span>
                 </a>
               </div>
@@ -116,7 +116,7 @@ export default function Footer() {
                 <span className="text-[10px] text-[#8C7D6C] block uppercase font-mono">Toll-Free Phone</span>
                 <a
                   href="tel:+18005557228"
-                  className="font-bold text-amber-800 hover:text-amber-950 transition-colors inline-flex items-center gap-1.5"
+                  className="font-bold text-stone-900 hover:text-amber-800 transition-colors inline-flex items-center gap-1.5"
                 >
                   <Phone className="w-3.5 h-3.5 text-amber-700" />
                   <span>+1 (800) 555-PACT (7228)</span>

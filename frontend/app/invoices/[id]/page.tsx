@@ -63,7 +63,7 @@ export default function InvoiceDetailPage() {
   if (loading) {
     return (
       <div className="py-24 text-center">
-        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="w-8 h-8 border-2 border-stone-800 border-t-transparent rounded-full animate-spin mx-auto"></div>
       </div>
     );
   }
@@ -96,14 +96,14 @@ export default function InvoiceDetailPage() {
         />
       )}
 
-      <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass space-y-6">
+      <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#EAE1D2] pb-4">
           <div>
             <span className="text-xs font-mono text-emerald-800 font-bold uppercase tracking-wider">PayPal Sandbox Invoicing v2</span>
             <h1 className="text-2xl font-black text-[#231A12] mt-1 break-all">Invoice {invoice.paypal_invoice_number || invoice.id}</h1>
           </div>
-          <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold self-start sm:self-auto ${
-            invoice.status === 'PAID' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+          <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold self-start sm:self-auto ${
+            invoice.status === 'PAID' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-stone-100 text-stone-800 border border-stone-300'
           }`}>
             {invoice.status}
           </span>
@@ -128,7 +128,7 @@ export default function InvoiceDetailPage() {
               href={invoice.paypal_hosted_url}
               target="_blank"
               rel="noreferrer"
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all min-h-[44px]"
+              className="w-full py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all min-h-[44px]"
             >
               <span>Launch PayPal Sandbox Payment Window</span>
               <ExternalLink className="w-4 h-4" />
@@ -143,7 +143,7 @@ export default function InvoiceDetailPage() {
           <button
             onClick={handleReconcile}
             disabled={reconciling}
-            className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 text-xs font-bold text-[#231A12] hover:text-purple-700 border border-[#DFD4C3] flex items-center gap-2 shadow-sm transition-all min-h-[40px]"
+            className="px-4 py-2 rounded-xl bg-white hover:bg-stone-50 text-xs font-semibold text-[#231A12] hover:text-stone-900 border border-[#DFD4C3] flex items-center gap-2 shadow-sm transition-all min-h-[40px]"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${reconciling ? 'animate-spin' : ''}`} />
             <span>{reconciling ? 'Polling Sandbox...' : 'Reconcile Status'}</span>

@@ -76,8 +76,8 @@ export default function ClientDashboard() {
 
   const pieData = [
     { name: 'Settled (PayPal)', value: 2500, color: '#059669' },
-    { name: 'Approved Pending Pay', value: 2500, color: '#7C3AED' },
-    { name: 'In Progress', value: 1500, color: '#D97706' },
+    { name: 'Approved Pending Pay', value: 2500, color: '#D97706' },
+    { name: 'In Progress', value: 1500, color: '#78716C' },
   ];
 
   return (
@@ -85,18 +85,18 @@ export default function ClientDashboard() {
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[11px] font-semibold tracking-wide uppercase mb-1">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 border border-stone-300/80 text-stone-800 text-[11px] font-medium tracking-wide uppercase mb-1">
             <Sparkles className="w-3 h-3 text-amber-700" />
             Client Management Center
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#231A12] tracking-tight">Active Projects & Settlement</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#231A12] tracking-tight">Active Projects & Settlement</h1>
           <p className="text-[#6B5C4D] text-xs sm:text-sm mt-0.5">
             Review deliverables, approve verified work, and authorize PayPal milestone invoices.
           </p>
         </div>
         <Link
           href="/projects/new"
-          className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all self-start sm:self-auto group min-h-[44px]"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-all self-start sm:self-auto group min-h-[42px]"
         >
           <Plus className="w-4 h-4" />
           <span>Create Project with Gemini</span>
@@ -114,10 +114,10 @@ export default function ClientDashboard() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>TOTAL COMMITTED</span>
-            <DollarSign className="w-4 h-4 text-purple-700" />
+            <DollarSign className="w-4 h-4 text-stone-700" />
           </div>
           <div className="text-2xl font-black text-[#231A12] mt-2">${stats.totalBudget.toLocaleString()} USD</div>
           <div className="text-xs text-[#6B5C4D] mt-1 flex items-center gap-1 font-medium">
@@ -125,7 +125,7 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>SETTLED (PAYPAL)</span>
             <CheckCircle className="w-4 h-4 text-emerald-700" />
@@ -136,7 +136,7 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>PENDING SETTLEMENT</span>
             <Clock className="w-4 h-4 text-amber-700" />
@@ -147,12 +147,12 @@ export default function ClientDashboard() {
           </div>
         </div>
 
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="flex items-center justify-between text-[#7A6C5B] text-xs font-mono font-semibold">
             <span>TRUST LEDGER</span>
-            <ShieldCheck className="w-4 h-4 text-purple-700" />
+            <ShieldCheck className="w-4 h-4 text-emerald-700" />
           </div>
-          <div className="text-2xl font-black text-purple-700 mt-2">Verified Valid</div>
+          <div className="text-2xl font-black text-stone-900 mt-2">Verified Valid</div>
           <div className="text-xs text-[#6B5C4D] mt-1 font-mono font-medium">
             SHA-256 unbroken chain
           </div>
@@ -161,10 +161,10 @@ export default function ClientDashboard() {
 
       {/* Analytics Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 overflow-hidden">
+        <div className="lg:col-span-2 glass-card p-6 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-4 overflow-hidden">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-bold text-[#231A12] flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-purple-700" />
+              <TrendingUp className="w-4 h-4 text-stone-800" />
               Milestone Allocation & Status
             </h3>
             <span className="text-xs font-mono text-[#7A6C5B]">Project: PulseAnalytics AI</span>
@@ -180,13 +180,13 @@ export default function ClientDashboard() {
                   contentStyle={{ backgroundColor: '#FAF7F2', borderColor: '#DFD4C3', borderRadius: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.08)' }}
                   itemStyle={{ color: '#231A12', fontWeight: 600 }}
                 />
-                <Bar dataKey="amount" fill="#7C3AED" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="amount" fill="#1C1917" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        <div className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 overflow-hidden">
+        <div className="glass-card p-6 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-4 overflow-hidden">
           <h3 className="text-base font-bold text-[#231A12] flex items-center gap-2">
             <Layers className="w-4 h-4 text-amber-700" />
             Budget Settlement Split
@@ -229,10 +229,10 @@ export default function ClientDashboard() {
       </div>
 
       {/* Projects List or Empty State */}
-      <div className="glass-card rounded-3xl border border-white/90 shadow-glass overflow-hidden">
+      <div className="glass-card rounded-3xl border border-[#E8DFD3] shadow-sm overflow-hidden">
         <div className="p-6 border-b border-[#EAE1D2] flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#231A12] flex items-center gap-2">
-            <FileCheck2 className="w-5 h-5 text-purple-700" />
+            <FileCheck2 className="w-5 h-5 text-stone-800" />
             Active Client Projects
           </h2>
           <span className="text-xs font-mono text-[#7A6C5B] font-semibold">
@@ -254,7 +254,7 @@ export default function ClientDashboard() {
               <div key={project.id} className="p-5 sm:p-6 hover:bg-white/60 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="space-y-1.5 max-w-xl">
                   <div className="flex items-center gap-2.5 flex-wrap">
-                    <Link href={`/projects/${project.id}`} className="text-base font-bold text-[#231A12] hover:text-purple-700 transition-colors">
+                    <Link href={`/projects/${project.id}`} className="text-base font-bold text-[#231A12] hover:text-amber-800 transition-colors">
                       {project.title}
                     </Link>
                     <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
@@ -271,7 +271,7 @@ export default function ClientDashboard() {
                 <div className="flex items-center gap-3 shrink-0">
                   <Link
                     href={`/projects/${project.id}`}
-                    className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 text-xs text-[#231A12] hover:text-purple-700 border border-[#DFD4C3] hover:border-purple-300 font-bold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
+                    className="px-4 py-2.5 rounded-xl bg-white hover:bg-stone-50 text-xs text-[#231A12] hover:text-stone-900 border border-[#DFD4C3] font-semibold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
                   >
                     Workspace
                     <ArrowRight className="w-3.5 h-3.5" />

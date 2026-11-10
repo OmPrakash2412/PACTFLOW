@@ -52,11 +52,11 @@ export default function NotificationBanner({
       badge: 'bg-amber-100 text-amber-800 border-amber-300',
     },
     info: {
-      bg: 'bg-purple-50/95 border-purple-300 text-purple-950 shadow-purple-700/10',
+      bg: 'bg-stone-50/95 border-stone-300 text-stone-950 shadow-stone-700/10',
       icon: Info,
-      iconColor: 'text-purple-700',
+      iconColor: 'text-stone-700',
       defaultTitle: 'Notice',
-      badge: 'bg-purple-100 text-purple-800 border-purple-300',
+      badge: 'bg-stone-100 text-stone-800 border-stone-300',
     },
   }[type];
 

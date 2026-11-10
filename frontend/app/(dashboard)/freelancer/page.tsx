@@ -79,9 +79,9 @@ export default function FreelancerDashboard() {
           <div className="text-xs text-[#6B5C4D] mt-1 font-medium">Milestone 1 captured directly via PayPal</div>
         </div>
 
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="text-xs font-mono font-bold text-[#7A6C5B]">APPROVED MILESTONES (PENDING INVOICE)</div>
-          <div className="text-2xl font-black text-purple-700 mt-2">$2,500.00 USD</div>
+          <div className="text-2xl font-black text-stone-900 mt-2">$2,500.00 USD</div>
           <div className="text-xs text-[#6B5C4D] mt-1 font-medium">Milestone 2 AI-verified with 94% score</div>
         </div>
 
@@ -125,7 +125,7 @@ export default function FreelancerDashboard() {
                   </div>
                   <Link
                     href={`/projects/${proj.id}`}
-                    className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white text-xs font-bold flex items-center gap-2 self-start sm:self-auto shadow-md shadow-amber-600/20 transition-all min-h-[40px]"
+                    className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-2 self-start sm:self-auto shadow-sm transition-all min-h-[40px]"
                   >
                     <Upload className="w-4 h-4" />
                     Submit Deliverable
@@ -134,7 +134,7 @@ export default function FreelancerDashboard() {
 
                 {/* Milestones list preview */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                  <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1">
+                  <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
                     <div className="flex items-center justify-between text-xs font-semibold">
                       <span className="text-[#231A12]">M1: Architecture</span>
                       <span className="text-emerald-700 font-bold">$2,500</span>
@@ -145,18 +145,18 @@ export default function FreelancerDashboard() {
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1">
+                  <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
                     <div className="flex items-center justify-between text-xs font-semibold">
                       <span className="text-[#231A12]">M2: AI Engine</span>
-                      <span className="text-purple-700 font-bold">$2,500</span>
+                      <span className="text-stone-900 font-bold">$2,500</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-purple-800 font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                    <div className="flex items-center gap-1.5 text-[11px] text-stone-700 font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-stone-700 shrink-0" />
                       <span>Client Approved • Invoicing Ready</span>
                     </div>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1">
+                  <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
                     <div className="flex items-center justify-between text-xs font-semibold">
                       <span className="text-[#231A12]">M3: PayPal Invoicing</span>
                       <span className="text-amber-700 font-bold">$1,500</span>
@@ -174,7 +174,7 @@ export default function FreelancerDashboard() {
       </div>
 
       {/* Freelancer Help Desk */}
-      <div className="p-5 rounded-3xl glass-card border border-white/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+      <div className="p-5 rounded-2xl glass-card border border-[#E8DFD3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
         <div>
           <span className="font-bold text-[#231A12] block">Freelancer Settlement Support</span>
           <span className="text-[#6B5C4D] block mt-0.5">Have questions regarding PayPal invoice receipts or Gemini deliverable verification?</span>
@@ -182,13 +182,13 @@ export default function FreelancerDashboard() {
         <div className="flex items-center gap-3">
           <a
             href="mailto:support@pactflow.io"
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#DFD4C3] text-purple-700 hover:text-purple-900 font-bold inline-flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#DFD4C3] text-stone-900 hover:text-amber-800 font-semibold inline-flex items-center gap-1.5 shadow-sm"
           >
             <Mail className="w-3.5 h-3.5" /> support@pactflow.io
           </a>
           <a
             href="tel:+18005557228"
-            className="px-3.5 py-2 rounded-xl bg-white border border-[#DFD4C3] text-amber-800 hover:text-amber-950 font-bold inline-flex items-center gap-1.5 shadow-sm"
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#DFD4C3] text-amber-800 hover:text-amber-950 font-semibold inline-flex items-center gap-1.5 shadow-sm"
           >
             <Phone className="w-3.5 h-3.5" /> Call Support
           </a>

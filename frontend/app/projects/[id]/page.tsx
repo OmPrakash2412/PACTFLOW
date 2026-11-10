@@ -280,7 +280,7 @@ export default function ProjectWorkspace() {
   if (loading) {
     return (
       <div className="py-24 text-center space-y-4">
-        <div className="w-8 h-8 border-2 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <div className="w-8 h-8 border-2 border-stone-800 border-t-transparent rounded-full animate-spin mx-auto"></div>
         <p className="text-[#7A6C5B] font-mono text-xs">Loading PACTFLOW Project Workspace...</p>
       </div>
     );
@@ -320,7 +320,7 @@ export default function ProjectWorkspace() {
         </div>
 
         {trustStatus && (
-          <div className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-white/80 border border-[#EAE1D2] text-xs font-mono shadow-sm">
+          <div className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white/80 border border-[#EAE1D2] text-xs font-mono shadow-sm">
             <ShieldCheck className="w-4 h-4 text-emerald-700 shrink-0" />
             <span className="text-[#6B5C4D]">Trust Ledger:</span>
             <span className="text-emerald-700 font-bold">{trustStatus.total_events} Block(s) Verified</span>
@@ -354,7 +354,7 @@ export default function ProjectWorkspace() {
               onClick={() => setActiveTab(tab.key as any)}
               className={`flex items-center gap-2 px-3.5 py-3 border-b-2 font-bold whitespace-nowrap transition-colors min-h-[44px] ${
                 isActive
-                  ? 'border-purple-600 text-purple-700 bg-white/80 rounded-t-xl'
+                  ? 'border-stone-900 text-stone-900 bg-white/80 rounded-t-xl'
                   : 'border-transparent text-[#7A6C5B] hover:text-[#231A12] hover:bg-white/40'
               }`}
             >
@@ -369,10 +369,10 @@ export default function ProjectWorkspace() {
       {activeTab === 'overview' && (
         <div className="space-y-6">
           {coordination && (
-            <div className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
+            <div className="glass-card p-6 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-4">
               <div className="flex items-center justify-between flex-wrap gap-2">
-                <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-purple-700 shrink-0" />
+                <span className="text-xs font-mono text-stone-800 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
                   Gemini Payment Coordinator Realtime Analysis
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-300 font-semibold">
@@ -381,15 +381,15 @@ export default function ProjectWorkspace() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-                <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2]">
+                <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2]">
                   <span className="text-xs text-[#7A6C5B] font-mono font-bold">TOTAL BUDGET</span>
                   <div className="text-lg font-black text-[#231A12] mt-1">{coordination.total_budget}</div>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2]">
+                <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2]">
                   <span className="text-xs text-[#7A6C5B] font-mono font-bold">SETTLED INVOICES</span>
                   <div className="text-lg font-black text-emerald-700 mt-1">{coordination.paid_amount}</div>
                 </div>
-                <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2]">
+                <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2]">
                   <span className="text-xs text-[#7A6C5B] font-mono font-bold">PENDING SETTLEMENT</span>
                   <div className="text-lg font-black text-[#231A12] mt-1">{coordination.pending_amount}</div>
                 </div>
@@ -400,20 +400,20 @@ export default function ProjectWorkspace() {
                 <ul className="space-y-1.5">
                   {coordination.action_items.map((action, idx) => (
                     <li key={idx} className="text-xs text-[#4B3F33] flex items-center gap-2 font-medium">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-600 shrink-0"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-stone-700 shrink-0"></span>
                       <span>{action}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-white/70 border border-[#EAE1D2] text-xs font-mono text-[#6B5C4D]">
+              <div className="p-3.5 rounded-xl bg-white/70 border border-[#EAE1D2] text-xs font-mono text-[#6B5C4D]">
                 Risk Assessment: <span className="text-[#231A12] font-semibold">{coordination.risk_assessment}</span>
               </div>
             </div>
           )}
 
-          <div className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
+          <div className="glass-card p-6 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-4">
             <h2 className="text-lg font-bold text-[#231A12]">Project Scope & Technical Description</h2>
             <p className="text-sm text-[#4B3F33] leading-relaxed whitespace-pre-line font-medium">{project.description}</p>
             <div className="pt-4 border-t border-[#EAE1D2] grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono text-[#7A6C5B]">
@@ -428,10 +428,10 @@ export default function ProjectWorkspace() {
       {activeTab === 'agreement' && (
         <div className="space-y-6">
           {agreement ? (
-            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass space-y-8">
+            <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EAE1D2] pb-5">
                 <div>
-                  <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider">Version {agreement.version}</span>
+                  <span className="text-xs font-mono text-stone-700 font-bold uppercase tracking-wider">Version {agreement.version}</span>
                   <h2 className="text-2xl font-black text-[#231A12] mt-1">{agreement.title}</h2>
                   <p className="text-xs text-[#7A6C5B] font-mono mt-1">Status: {agreement.status.toUpperCase()}</p>
                 </div>
@@ -449,7 +449,7 @@ export default function ProjectWorkspace() {
               {/* Scope */}
               <div className="space-y-2">
                 <h3 className="text-base font-bold text-[#231A12]">1. Scope of Work</h3>
-                <p className="text-sm text-[#4B3F33] leading-relaxed bg-white/70 p-4 rounded-2xl border border-[#EAE1D2] font-medium">
+                <p className="text-sm text-[#4B3F33] leading-relaxed bg-white/70 p-4 rounded-xl border border-[#EAE1D2] font-medium">
                   {agreement.scope_of_work}
                 </p>
               </div>
@@ -457,7 +457,7 @@ export default function ProjectWorkspace() {
               {/* Budget Allocation Table */}
               <div className="space-y-3">
                 <h3 className="text-base font-bold text-[#231A12]">2. Budget Allocation & Milestones</h3>
-                <div className="overflow-x-auto rounded-2xl border border-[#EAE1D2] max-w-full">
+                <div className="overflow-x-auto rounded-xl border border-[#EAE1D2] max-w-full">
                   <table className="w-full text-left text-xs min-w-[320px]">
                     <thead className="bg-white/80 text-[#7A6C5B] font-mono uppercase font-bold">
                       <tr>
@@ -471,7 +471,7 @@ export default function ProjectWorkspace() {
                         <tr key={idx}>
                           <td className="py-2.5 px-4 font-bold text-[#231A12]">{b.milestone}</td>
                           <td className="py-2.5 px-4 font-mono">${b.amount} USD</td>
-                          <td className="py-2.5 px-4 font-mono text-purple-700 font-bold">{b.percentage}%</td>
+                          <td className="py-2.5 px-4 font-mono text-stone-900 font-bold">{b.percentage}%</td>
                         </tr>
                       ))}
                     </tbody>
@@ -484,7 +484,7 @@ export default function ProjectWorkspace() {
                 <h3 className="text-base font-bold text-[#231A12]">3. Acceptance Criteria</h3>
                 <ul className="space-y-2">
                   {agreement.acceptance_criteria.map((c, idx) => (
-                    <li key={idx} className="text-xs text-[#4B3F33] flex items-start gap-2.5 bg-white/70 p-3 rounded-2xl border border-[#EAE1D2] font-medium">
+                    <li key={idx} className="text-xs text-[#4B3F33] flex items-start gap-2.5 bg-white/70 p-3 rounded-xl border border-[#EAE1D2] font-medium">
                       <CheckCircle2 className="w-4 h-4 text-emerald-700 shrink-0 mt-0.5" />
                       <span>{c}</span>
                     </li>
@@ -519,7 +519,7 @@ export default function ProjectWorkspace() {
                 </div>
                 <button
                   onClick={handleAcceptAgreement}
-                  className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-purple-600/20 transition-all min-h-[44px]"
+                  className="px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-all min-h-[44px]"
                 >
                   <ShieldCheck className="w-4 h-4" />
                   Digitally Sign & Accept Agreement
@@ -568,10 +568,10 @@ export default function ProjectWorkspace() {
           ) : (
             <div className="space-y-4">
               {milestones.map((m) => (
-                <div key={m.id} className="glass-card p-6 rounded-3xl border border-white/90 shadow-glass space-y-4">
+                <div key={m.id} className="glass-card p-6 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#EAE1D2] pb-3">
                     <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center font-mono text-xs font-black text-purple-700 shrink-0">
+                      <span className="w-8 h-8 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center font-mono text-xs font-bold text-stone-900 shrink-0">
                         {m.sequence_order}
                       </span>
                       <div>
@@ -580,9 +580,9 @@ export default function ProjectWorkspace() {
                       </div>
                     </div>
 
-                    <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-bold self-start sm:self-auto ${
+                    <span className={`px-3 py-1 rounded-full text-xs font-mono uppercase font-semibold self-start sm:self-auto ${
                       m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                      m.status === 'approved' ? 'bg-purple-100 text-purple-800 border border-purple-300' :
+                      m.status === 'approved' ? 'bg-stone-100 text-stone-800 border border-stone-300' :
                       m.status === 'submitted' ? 'bg-amber-100 text-amber-800 border border-amber-300' :
                       'bg-white text-[#7A6C5B] border border-[#DFD4C3]'
                     }`}>
@@ -593,12 +593,12 @@ export default function ProjectWorkspace() {
                   <p className="text-xs text-[#4B3F33] font-medium">{m.description}</p>
 
                   {/* Acceptance Criteria */}
-                  <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-2">
+                  <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-2">
                     <span className="text-xs font-mono text-[#7A6C5B] uppercase font-bold">Agreed Acceptance Criteria:</span>
                     <ul className="space-y-1">
                       {m.acceptance_criteria.map((c, idx) => (
                         <li key={idx} className="text-xs text-[#4B3F33] flex items-center gap-2 font-medium">
-                          <Check className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                          <Check className="w-3.5 h-3.5 text-stone-700 shrink-0" />
                           <span>{c}</span>
                         </li>
                       ))}
@@ -614,7 +614,7 @@ export default function ProjectWorkspace() {
                             setSelectedMilestone(m);
                             setDeliverableTitle(`Deliverables for ${m.title}`);
                           }}
-                          className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
+                          className="px-4 py-2 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
                         >
                           <Upload className="w-3.5 h-3.5" />
                           Submit Deliverable Evidence
@@ -624,9 +624,9 @@ export default function ProjectWorkspace() {
                       {m.has_deliverable && (
                         <button
                           onClick={() => handleViewReport(m)}
-                          className="px-4 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] hover:border-purple-300 text-[#231A12] hover:text-purple-700 text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm min-h-[40px]"
+                          className="px-4 py-2 rounded-xl bg-white hover:bg-stone-50 border border-[#DFD4C3] text-[#231A12] hover:text-stone-900 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm min-h-[40px]"
                         >
-                          <FileCheck className="w-3.5 h-3.5 text-purple-700" />
+                          <FileCheck className="w-3.5 h-3.5 text-stone-700" />
                           Inspect AI Evidence Audit
                         </button>
                       )}
@@ -636,13 +636,13 @@ export default function ProjectWorkspace() {
                       <div className="flex items-center gap-2 flex-wrap">
                         <button
                           onClick={() => handleClientDecision(m.id, 'request_revisions')}
-                          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-bold transition-all min-h-[40px]"
+                          className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 text-xs font-semibold transition-all min-h-[40px]"
                         >
                           Request Revisions
                         </button>
                         <button
                           onClick={() => handleClientDecision(m.id, 'approve')}
-                          className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all min-h-[40px]"
+                          className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all min-h-[40px]"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Approve Milestone
@@ -654,7 +654,7 @@ export default function ProjectWorkspace() {
                       <button
                         disabled={invoicingLoading}
                         onClick={() => handleGenerateInvoice(m.id)}
-                        className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-purple-600/20 transition-all min-h-[40px]"
+                        className="px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition-all min-h-[40px]"
                       >
                         <CreditCard className="w-3.5 h-3.5" />
                         Generate PayPal Sandbox Invoice
@@ -666,7 +666,7 @@ export default function ProjectWorkspace() {
                         href={m.paypal_hosted_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm min-h-[40px]"
+                        className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm min-h-[40px]"
                       >
                         Pay in PayPal Sandbox <ExternalLink className="w-3.5 h-3.5" />
                       </a>
@@ -768,13 +768,13 @@ export default function ProjectWorkspace() {
               <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 max-w-3xl w-full space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
                 <div className="flex items-center justify-between border-b border-[#EAE1D2] pb-3">
                   <div>
-                    <span className="text-xs font-mono text-purple-700 font-bold uppercase tracking-wider">Gemini Evidence Audit</span>
+                    <span className="text-xs font-mono text-stone-800 font-bold uppercase tracking-wider">Gemini Evidence Audit</span>
                     <h3 className="text-xl font-black text-[#231A12] mt-0.5">Verification Report</h3>
                   </div>
                   <button onClick={() => setActiveReport(null)} className="text-[#7A6C5B] hover:text-[#231A12] font-bold p-1">✕</button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] flex-wrap gap-2">
+                <div className="flex items-center justify-between p-4 rounded-xl bg-white/70 border border-[#EAE1D2] flex-wrap gap-2">
                   <div>
                     <div className="text-xs font-mono text-[#7A6C5B] font-bold">OVERALL VERDICT</div>
                     <div className={`text-lg font-black uppercase mt-0.5 ${
@@ -790,7 +790,7 @@ export default function ProjectWorkspace() {
                   </div>
                 </div>
 
-                <p className="text-xs text-[#4B3F33] leading-relaxed bg-white/70 p-3.5 rounded-2xl border border-[#EAE1D2] font-medium">
+                <p className="text-xs text-[#4B3F33] leading-relaxed bg-white/70 p-3.5 rounded-xl border border-[#EAE1D2] font-medium">
                   {activeReport.summary}
                 </p>
 
@@ -799,7 +799,7 @@ export default function ProjectWorkspace() {
                   <h4 className="text-xs font-mono text-[#7A6C5B] uppercase font-bold">Individual Criteria Evaluations:</h4>
                   <div className="space-y-2">
                     {activeReport.criteria_analysis.map((crit, idx) => (
-                      <div key={idx} className="p-3.5 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1 text-xs">
+                      <div key={idx} className="p-3.5 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1 text-xs">
                         <div className="flex items-center justify-between flex-wrap gap-1">
                           <span className="font-bold text-[#231A12]">{crit.criterion}</span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold ${
@@ -816,9 +816,9 @@ export default function ProjectWorkspace() {
                 </div>
 
                 {activeReport.recommendations.length > 0 && (
-                  <div className="p-3.5 rounded-2xl bg-purple-50 border border-purple-200 space-y-1 text-xs">
-                    <span className="font-bold text-purple-900">Recommendations:</span>
-                    <ul className="list-disc list-inside text-purple-900 space-y-0.5 font-medium">
+                  <div className="p-3.5 rounded-xl bg-stone-100 border border-stone-200 space-y-1 text-xs">
+                    <span className="font-bold text-stone-900">Recommendations:</span>
+                    <ul className="list-disc list-inside text-stone-800 space-y-0.5 font-medium">
                       {activeReport.recommendations.map((r, i) => (
                         <li key={i}>{r}</li>
                       ))}
@@ -829,7 +829,7 @@ export default function ProjectWorkspace() {
                 <div className="flex justify-end pt-2">
                   <button
                     onClick={() => setActiveReport(null)}
-                    className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold"
+                    className="px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold"
                   >
                     Close Report
                   </button>
@@ -862,14 +862,14 @@ export default function ProjectWorkspace() {
               onAction={() => setActiveTab('milestones')}
             />
           ) : (
-            <div className="glass-card rounded-3xl border border-white/90 shadow-glass divide-y divide-[#EAE1D2]">
+            <div className="glass-card rounded-3xl border border-[#E8DFD3] shadow-sm divide-y divide-[#EAE1D2]">
               {milestones.filter(m => ['approved', 'invoiced', 'paid'].includes(m.status)).map((m) => (
                 <div key={m.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-3 flex-wrap">
                       <h3 className="text-base font-bold text-[#231A12]">{m.title}</h3>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-bold ${
-                        m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-purple-100 text-purple-800 border border-purple-200'
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-mono font-semibold ${
+                        m.status === 'paid' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-stone-100 text-stone-800 border border-stone-300'
                       }`}>
                         {m.status.toUpperCase()}
                       </span>
@@ -891,14 +891,14 @@ export default function ProjectWorkspace() {
                           href={m.paypal_hosted_url}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all"
+                          className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all"
                         >
                           Launch PayPal Checkout <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                         <button
                           disabled={reconcilingId === m.invoice_id}
                           onClick={() => m.invoice_id && simulatePayPalPayment(m.invoice_id)}
-                          className="px-3.5 py-2.5 rounded-xl bg-white hover:bg-purple-50 border border-[#DFD4C3] text-xs font-mono font-bold text-[#231A12] transition-colors"
+                          className="px-3.5 py-2 rounded-xl bg-white hover:bg-stone-50 border border-[#DFD4C3] text-xs font-mono font-semibold text-[#231A12] transition-colors"
                         >
                           {reconcilingId === m.invoice_id ? 'Simulating...' : 'Simulate Webhook Paid'}
                         </button>
@@ -906,7 +906,7 @@ export default function ProjectWorkspace() {
                     )}
 
                     {m.status === 'paid' && (
-                      <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-800 font-bold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
+                      <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-800 font-semibold bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">
                         <CheckCircle2 className="w-4 h-4 text-emerald-700" />
                         Authoritative Payment Sealed
                       </div>
@@ -938,10 +938,10 @@ export default function ProjectWorkspace() {
           ) : (
             <div className="space-y-3">
               {trustEvents.map((e) => (
-                <div key={e.id} className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass space-y-2 text-xs font-mono">
+                <div key={e.id} className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-2 text-xs font-mono">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-lg bg-purple-100 text-purple-800 font-bold border border-purple-200">
+                      <span className="px-2.5 py-0.5 rounded-lg bg-stone-100 text-stone-800 font-bold border border-stone-300">
                         BLOCK #{e.sequence_number}
                       </span>
                       <span className="text-[#231A12] font-bold">{e.event_type}</span>

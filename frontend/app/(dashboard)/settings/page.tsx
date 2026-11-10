@@ -49,10 +49,10 @@ export default function UserSettings() {
         />
       )}
 
-      <form onSubmit={handleSave} className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass space-y-6">
+      <form onSubmit={handleSave} className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-6">
         <div className="space-y-4">
           <h2 className="text-base font-bold text-[#231A12] flex items-center gap-2">
-            <User className="w-4 h-4 text-purple-700" />
+            <User className="w-4 h-4 text-stone-700" />
             Profile Details
           </h2>
 
@@ -114,34 +114,34 @@ export default function UserSettings() {
 
         <button
           type="submit"
-          className="px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all min-h-[44px]"
+          className="px-6 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-all min-h-[42px]"
         >
           Save Changes
         </button>
       </form>
 
       {/* Support & Contact Details in Settings */}
-      <div className="glass-card p-6 rounded-3xl border border-white/90 space-y-3">
+      <div className="glass-card p-6 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-3">
         <h3 className="text-sm font-bold text-[#231A12] flex items-center gap-2">
-          <Mail className="w-4 h-4 text-purple-700" />
+          <Mail className="w-4 h-4 text-stone-700" />
           Direct Technical Support
         </h3>
         <p className="text-xs text-[#6B5C4D]">
           Encountering issues with PayPal sandbox authentication or deliverable verification? Reach out directly:
         </p>
-        <div className="flex flex-wrap items-center gap-4 text-xs font-bold pt-1">
+        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold pt-1">
           <a
             href="mailto:support@pactflow.io"
-            className="text-purple-700 hover:text-purple-900 inline-flex items-center gap-1.5"
+            className="text-stone-900 hover:text-amber-800 inline-flex items-center gap-1.5"
           >
-            <Mail className="w-3.5 h-3.5" /> support@pactflow.io
+            <Mail className="w-3.5 h-3.5 text-stone-700" /> support@pactflow.io
           </a>
           <span className="text-[#D8CCBA]">•</span>
           <a
             href="tel:+18005557228"
             className="text-amber-800 hover:text-amber-950 inline-flex items-center gap-1.5"
           >
-            <Phone className="w-3.5 h-3.5" /> +1 (800) 555-PACT (7228)
+            <Phone className="w-3.5 h-3.5 text-amber-700" /> +1 (800) 555-7228
           </a>
         </div>
       </div>

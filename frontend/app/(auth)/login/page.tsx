@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ShieldCheck, ArrowRight, Lock, Mail, Sparkles, CheckCircle, Key } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Lock, Mail, Sparkles } from 'lucide-react';
 import { api } from '../../../lib/api';
 import NotificationBanner from '../../../components/NotificationBanner';
 
@@ -52,25 +52,21 @@ export default function LoginPage() {
 
   return (
     <div className="relative max-w-lg mx-auto py-8 sm:py-12 px-3 sm:px-0 w-full overflow-hidden">
-      {/* Background glass glows */}
-      <div className="absolute -top-10 -left-10 w-48 h-48 bg-amber-300/30 rounded-full blur-2xl pointer-events-none -z-10" />
-      <div className="absolute -bottom-10 -right-10 w-52 h-52 bg-purple-300/30 rounded-full blur-2xl pointer-events-none -z-10" />
-
       {/* Header */}
       <div className="text-center space-y-3 mb-6 sm:mb-8">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/25 mx-auto">
-          <ShieldCheck className="w-8 h-8 text-white" />
+        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-center shadow-sm mx-auto">
+          <ShieldCheck className="w-7 sm:w-8 h-7 sm:h-8 text-amber-500" />
         </div>
         <div>
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-[11px] font-semibold tracking-wide uppercase">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-stone-100 border border-stone-300/80 text-stone-800 text-[11px] font-medium uppercase tracking-wider">
             <Sparkles className="w-3 h-3 text-amber-700" />
             Zero-Escrow Milestone Protocol
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#231A12] mt-2 tracking-tight">
-            Sign In to <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">PACTFLOW</span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#231A12] mt-2 tracking-tight">
+            Sign In to <span className="text-stone-900">PACT</span><span className="text-amber-700">FLOW</span>
           </h1>
-          <p className="text-xs text-[#7A6C5B] font-medium mt-1">
-            Where Work Meets Trust • Enter your credentials to access the main site
+          <p className="text-xs text-[#7A6C5B] font-normal mt-1">
+            Where Work Meets Trust • Enter your credentials to access the workspace
           </p>
         </div>
       </div>
@@ -97,50 +93,50 @@ export default function LoginPage() {
       )}
 
       {/* Glass Form Card */}
-      <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass space-y-6">
+      <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-5">
         {/* Quick Demo Selector */}
         <div className="space-y-2">
-          <span className="text-[11px] font-bold text-[#6B5C4D] uppercase tracking-wider block">
+          <span className="text-[10px] font-mono font-semibold text-[#6B5C4D] uppercase tracking-wider block">
             1-Click Demo Profiles
           </span>
           <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => setRoleQuickly('client')}
-              className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
+              className={`p-3 rounded-xl border text-left transition-all min-h-[44px] ${
                 email === 'client@pactflow.io'
-                  ? 'bg-purple-50/90 border-purple-400/80 shadow-sm ring-2 ring-purple-500/20'
-                  : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
+                  ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                  : 'bg-white/80 border-[#DFD4C3] text-stone-800 hover:bg-stone-50'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#231A12]">Client Profile</span>
-                <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                <span className="text-xs font-bold">Client Profile</span>
+                <span className={`w-2 h-2 rounded-full ${email === 'client@pactflow.io' ? 'bg-amber-400' : 'bg-stone-400'}`}></span>
               </div>
-              <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">client@pactflow.io</p>
+              <p className={`text-[10px] mt-0.5 truncate ${email === 'client@pactflow.io' ? 'text-stone-300' : 'text-[#7A6C5B]'}`}>client@pactflow.io</p>
             </button>
 
             <button
               type="button"
               onClick={() => setRoleQuickly('freelancer')}
-              className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
+              className={`p-3 rounded-xl border text-left transition-all min-h-[44px] ${
                 email === 'freelancer@pactflow.io'
-                  ? 'bg-amber-50/90 border-amber-400/80 shadow-sm ring-2 ring-amber-500/20'
-                  : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
+                  ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                  : 'bg-white/80 border-[#DFD4C3] text-stone-800 hover:bg-stone-50'
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#231A12]">Freelancer</span>
-                <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                <span className="text-xs font-bold">Freelancer</span>
+                <span className={`w-2 h-2 rounded-full ${email === 'freelancer@pactflow.io' ? 'bg-amber-400' : 'bg-stone-400'}`}></span>
               </div>
-              <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">freelancer@pactflow.io</p>
+              <p className={`text-[10px] mt-0.5 truncate ${email === 'freelancer@pactflow.io' ? 'text-stone-300' : 'text-[#7A6C5B]'}`}>freelancer@pactflow.io</p>
             </button>
           </div>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#4B3F33]">Email Address</label>
+            <label className="text-xs font-semibold text-[#4B3F33]">Email Address</label>
             <div className="relative">
               <Mail className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
               <input
@@ -155,7 +151,7 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-[#4B3F33]">Password</label>
+            <label className="text-xs font-semibold text-[#4B3F33]">Password</label>
             <div className="relative">
               <Lock className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
               <input
@@ -172,14 +168,14 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group min-h-[44px]"
+            className="w-full py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 group min-h-[44px]"
           >
             {loading ? (
               <span>Authenticating Session...</span>
             ) : (
               <>
                 <span>Sign In to PACTFLOW</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </>
             )}
           </button>
@@ -187,7 +183,7 @@ export default function LoginPage() {
 
         <div className="pt-2 border-t border-[#EAE1D2] flex items-center justify-between text-xs text-[#7A6C5B]">
           <span>New to the protocol?</span>
-          <Link href="/register" className="font-bold text-purple-700 hover:text-purple-900 transition-colors">
+          <Link href="/register" className="font-semibold text-stone-900 hover:text-amber-800 transition-colors">
             Register Account
           </Link>
         </div>

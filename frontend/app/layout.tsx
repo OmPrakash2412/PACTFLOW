@@ -69,16 +69,16 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="alternate icon" href="/favicon.ico" />
       </head>
-      <body className="min-h-screen bg-[#FAF7F2] text-[#2D251E] flex flex-col antialiased selection:bg-purple-200 selection:text-purple-900 relative w-full overflow-x-hidden">
-        {/* Isolated decorative background orbs with strict overflow-hidden container */}
+      <body className="min-h-screen bg-[#FAF7F2] text-[#1C1917] flex flex-col antialiased selection:bg-amber-100 selection:text-stone-900 relative w-full overflow-x-hidden">
+        {/* Subtle, soft ambient lighting (No noisy glowing orbs) */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10" aria-hidden="true">
-          <div className="absolute -top-32 -left-32 w-80 sm:w-96 h-80 sm:h-96 bg-amber-200/35 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 -right-24 w-80 sm:w-[28rem] h-80 sm:h-[28rem] bg-purple-200/30 rounded-full blur-3xl" />
-          <div className="absolute -bottom-32 left-1/4 w-80 sm:w-96 h-80 sm:h-96 bg-orange-100/50 rounded-full blur-3xl" />
+          <div className="absolute -top-32 -left-32 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 -right-24 w-[28rem] h-[28rem] bg-[#EDE4D5]/40 rounded-full blur-3xl" />
+          <div className="absolute -bottom-32 left-1/4 w-96 h-96 bg-stone-100/50 rounded-full blur-3xl" />
         </div>
 
         <Navbar />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
+        <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
           {children}
         </main>
         <Footer />

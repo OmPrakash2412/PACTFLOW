@@ -62,7 +62,7 @@ export default function HomeOrLoginPage() {
       localStorage.setItem('pactflow_role', resp.user.role);
       setToken(resp.access_token);
       setRole(resp.user.role);
-      setSuccess(`Authenticated as ${resp.user.full_name || resp.user.role}! Loading hub...`);
+      setSuccess(`Authenticated as ${resp.user.full_name || resp.user.role}! Loading workspace...`);
 
       setTimeout(() => {
         if (resp.user.role === 'freelancer') {
@@ -98,7 +98,7 @@ export default function HomeOrLoginPage() {
   if (checkingAuth) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-purple-600 border-t-transparent animate-spin"></div>
+        <div className="w-8 h-8 rounded-full border-2 border-stone-800 border-t-transparent animate-spin"></div>
       </div>
     );
   }
@@ -106,16 +106,16 @@ export default function HomeOrLoginPage() {
   // IF ALREADY LOGGED IN: Open Main Site Experience
   if (token) {
     return (
-      <div className="space-y-10 py-4 w-full max-w-full overflow-hidden">
-        {/* Welcome Back Glass Banner */}
-        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-white/90 shadow-glass flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+      <div className="space-y-8 py-4 w-full max-w-full overflow-hidden">
+        {/* Welcome Back Card */}
+        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
           <div className="space-y-2 z-10 max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Active Session ({role === 'freelancer' ? 'Freelancer Profile' : 'Client Profile'})
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-[#231A12] tracking-tight">
-              Welcome to the <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">PACTFLOW</span> Portal
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-[#231A12] tracking-tight">
+              Welcome to the <span className="text-stone-900">PACT</span><span className="text-amber-700">FLOW</span> Workspace
             </h1>
             <p className="text-xs sm:text-sm text-[#6B5C4D]">
               Your cryptographic agreement, milestone verification, and PayPal settlement workspace is ready.
@@ -125,14 +125,14 @@ export default function HomeOrLoginPage() {
           <div className="flex flex-wrap items-center gap-3 z-10 w-full sm:w-auto">
             <Link
               href={role === 'freelancer' ? '/freelancer' : '/dashboard'}
-              className="flex-1 sm:flex-none px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold text-xs shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2 transition-all min-h-[44px]"
+              className="flex-1 sm:flex-none px-6 py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-2 transition-all min-h-[44px]"
             >
               <span>Enter Main Dashboard</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <button
               onClick={handleLogout}
-              className="px-4 py-3 rounded-2xl bg-white/80 hover:bg-rose-50 text-[#6B5A49] hover:text-rose-700 border border-[#DFD4C3] hover:border-rose-200 text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
+              className="px-4 py-3 rounded-xl bg-white hover:bg-stone-100 text-[#6B5A49] hover:text-stone-900 border border-[#DFD4C3] text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-1.5 min-h-[44px]"
             >
               <LogOut className="w-4 h-4" />
               <span>Sign Out</span>
@@ -141,75 +141,75 @@ export default function HomeOrLoginPage() {
         </div>
 
         {/* Quick Launch Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Link
             href="/dashboard"
-            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
+            className="glass-card glass-card-hover p-6 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-4 group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-700 group-hover:scale-105 transition-transform">
-              <Layers className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-900 group-hover:scale-105 transition-transform">
+              <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-purple-700 transition-colors">Client Hub</h2>
+              <h2 className="text-base font-bold text-[#231A12] group-hover:text-amber-800 transition-colors">Client Hub</h2>
               <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
                 Create contracts with Gemini Pact Architect, inspect AI deliverable audits, and trigger PayPal invoices.
               </p>
             </div>
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-purple-700">
+            <div className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900 group-hover:text-amber-800">
               Open Client Hub <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           <Link
             href="/freelancer"
-            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
+            className="glass-card glass-card-hover p-6 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-4 group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-200 flex items-center justify-center text-amber-800 group-hover:scale-105 transition-transform">
-              <FileCheck2 className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center text-amber-800 group-hover:scale-105 transition-transform">
+              <FileCheck2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-amber-800 transition-colors">Freelancer Hub</h2>
+              <h2 className="text-base font-bold text-[#231A12] group-hover:text-amber-800 transition-colors">Freelancer Hub</h2>
               <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
                 Submit milestone evidence, review Gemini audit reports, and track PayPal payment releases.
               </p>
             </div>
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
+            <div className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900 group-hover:text-amber-800">
               Open Freelancer Hub <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           <Link
             href="/ledger"
-            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
+            className="glass-card glass-card-hover p-6 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-4 group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-800 group-hover:scale-105 transition-transform">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center text-emerald-800 group-hover:scale-105 transition-transform">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-emerald-800 transition-colors">Trust Ledger</h2>
+              <h2 className="text-base font-bold text-[#231A12] group-hover:text-emerald-800 transition-colors">Trust Ledger</h2>
               <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
                 Verify cryptographic SHA-256 block chains, tamper detection, and payment event trails.
               </p>
             </div>
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-emerald-800">
+            <div className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900 group-hover:text-emerald-800">
               Inspect Trust Ledger <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
 
           <Link
             href="/empty"
-            className="glass-card glass-card-hover p-6 rounded-3xl border border-white/90 shadow-glass space-y-4 group"
+            className="glass-card glass-card-hover p-6 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-4 group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 group-hover:scale-105 transition-transform">
-              <FolderPlus className="w-6 h-6" />
+            <div className="w-11 h-11 rounded-xl bg-stone-100 border border-stone-200 flex items-center justify-center text-stone-700 group-hover:scale-105 transition-transform">
+              <FolderPlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[#231A12] group-hover:text-indigo-700 transition-colors">Empty States</h2>
+              <h2 className="text-base font-bold text-[#231A12] group-hover:text-stone-900 transition-colors">Empty States</h2>
               <p className="text-xs text-[#7A6C5B] mt-1 leading-relaxed">
                 Review fallback empty states for newly initialized client workspaces and pending contracts.
               </p>
             </div>
-            <div className="inline-flex items-center gap-1 text-xs font-bold text-indigo-700">
+            <div className="inline-flex items-center gap-1 text-xs font-semibold text-stone-900">
               Explore Showcase <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
             </div>
           </Link>
@@ -218,22 +218,22 @@ export default function HomeOrLoginPage() {
     );
   }
 
-  // IF NOT LOGGED IN: First Login Page Flow with Light Beige Glassmorphism
+  // IF NOT LOGGED IN: Clean, Minimalist Login View
   return (
-    <div className="relative max-w-4xl mx-auto py-6 sm:py-8 space-y-8 sm:space-y-10 w-full overflow-hidden">
-      {/* Main Glass Portal Header */}
+    <div className="relative max-w-4xl mx-auto py-6 sm:py-10 space-y-8 sm:space-y-10 w-full overflow-hidden">
+      {/* Header */}
       <div className="text-center space-y-3 px-3">
-        <div className="w-14 sm:w-16 h-14 sm:h-16 rounded-3xl bg-gradient-to-tr from-purple-600 via-indigo-600 to-amber-500 flex items-center justify-center shadow-lg shadow-purple-500/20 mx-auto">
-          <ShieldCheck className="w-8 sm:w-9 h-8 sm:h-9 text-white" />
+        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-stone-900 border border-stone-800 flex items-center justify-center shadow-sm mx-auto">
+          <ShieldCheck className="w-7 sm:w-8 h-7 sm:h-8 text-amber-500" />
         </div>
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100/70 border border-amber-300/60 text-amber-900 text-xs font-semibold shadow-sm">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 border border-stone-300/80 text-stone-800 text-xs font-medium">
           <Sparkles className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-          <span>AI-Powered Milestone Coordination & PayPal Sandbox</span>
+          <span>AI Milestone Verification & PayPal Settlement Protocol</span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-[#231A12] tracking-tight">
-          Where Work Meets <span className="bg-gradient-to-r from-purple-700 via-indigo-700 to-amber-600 bg-clip-text text-transparent">Trust.</span>
+        <h1 className="text-3xl sm:text-5xl font-extrabold text-[#231A12] tracking-tight">
+          Where Work Meets <span className="text-stone-900 underline decoration-amber-500/40 decoration-2 underline-offset-4">Trust.</span>
         </h1>
-        <p className="text-xs sm:text-sm text-[#6B5C4D] max-w-xl mx-auto font-medium">
+        <p className="text-xs sm:text-sm text-[#6B5C4D] max-w-xl mx-auto font-normal leading-relaxed">
           Sign in below to unlock your client or freelancer workspace, inspect cryptographic ledgers, and coordinate PayPal milestone settlements.
         </p>
       </div>
@@ -259,57 +259,57 @@ export default function HomeOrLoginPage() {
         </div>
       )}
 
-      {/* Glass Login Card */}
+      {/* Login Card */}
       <div className="max-w-md mx-auto px-3 sm:px-0">
-        <div className="glass-card p-6 sm:p-9 rounded-3xl border border-white/90 shadow-glass space-y-6">
+        <div className="glass-card p-6 sm:p-8 rounded-3xl border border-[#E8DFD3] shadow-sm space-y-5">
           <div className="space-y-1">
-            <h2 className="text-xl font-extrabold text-[#231A12]">Sign In to PACTFLOW</h2>
-            <p className="text-xs text-[#7A6C5B] font-medium">Select a role profile or enter credentials</p>
+            <h2 className="text-lg font-bold text-[#231A12]">Sign In to PACTFLOW</h2>
+            <p className="text-xs text-[#7A6C5B]">Select a demo role profile or enter credentials</p>
           </div>
 
           {/* Quick Demo Selector */}
           <div className="space-y-2">
-            <span className="text-[10px] font-bold text-[#6B5C4D] uppercase tracking-wider block">
+            <span className="text-[10px] font-mono font-semibold text-[#6B5C4D] uppercase tracking-wider block">
               1-Click Demo Profiles
             </span>
             <div className="grid grid-cols-2 gap-2.5">
               <button
                 type="button"
                 onClick={() => setDemoRole('client')}
-                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
+                className={`p-3 rounded-xl border text-left transition-all min-h-[44px] ${
                   email === 'client@pactflow.io'
-                    ? 'bg-purple-50/90 border-purple-400 shadow-sm ring-2 ring-purple-500/20'
-                    : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
+                    ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                    : 'bg-white/80 border-[#DFD4C3] text-stone-800 hover:bg-stone-50'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#231A12]">Client</span>
-                  <span className="w-2 h-2 rounded-full bg-purple-600"></span>
+                  <span className="text-xs font-bold">Client</span>
+                  <span className={`w-2 h-2 rounded-full ${email === 'client@pactflow.io' ? 'bg-amber-400' : 'bg-stone-400'}`}></span>
                 </div>
-                <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">client@pactflow.io</p>
+                <p className={`text-[10px] mt-0.5 truncate ${email === 'client@pactflow.io' ? 'text-stone-300' : 'text-[#7A6C5B]'}`}>client@pactflow.io</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => setDemoRole('freelancer')}
-                className={`p-3 rounded-2xl border text-left transition-all backdrop-blur-md min-h-[44px] ${
+                className={`p-3 rounded-xl border text-left transition-all min-h-[44px] ${
                   email === 'freelancer@pactflow.io'
-                    ? 'bg-amber-50/90 border-amber-400 shadow-sm ring-2 ring-amber-500/20'
-                    : 'bg-white/60 border-[#DFD4C3] hover:bg-white/80'
+                    ? 'bg-stone-900 text-white border-stone-900 shadow-sm'
+                    : 'bg-white/80 border-[#DFD4C3] text-stone-800 hover:bg-stone-50'
                 }`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#231A12]">Freelancer</span>
-                  <span className="w-2 h-2 rounded-full bg-amber-600"></span>
+                  <span className="text-xs font-bold">Freelancer</span>
+                  <span className={`w-2 h-2 rounded-full ${email === 'freelancer@pactflow.io' ? 'bg-amber-400' : 'bg-stone-400'}`}></span>
                 </div>
-                <p className="text-[10px] text-[#7A6C5B] mt-0.5 truncate">freelancer@pactflow.io</p>
+                <p className={`text-[10px] mt-0.5 truncate ${email === 'freelancer@pactflow.io' ? 'text-stone-300' : 'text-[#7A6C5B]'}`}>freelancer@pactflow.io</p>
               </button>
             </div>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#4B3F33]">Email Address</label>
+              <label className="text-xs font-semibold text-[#4B3F33]">Email Address</label>
               <div className="relative">
                 <Mail className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
                 <input
@@ -324,7 +324,7 @@ export default function HomeOrLoginPage() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-[#4B3F33]">Password</label>
+              <label className="text-xs font-semibold text-[#4B3F33]">Password</label>
               <div className="relative">
                 <Lock className="w-4 h-4 text-[#8C7D6C] absolute left-3.5 top-3" />
                 <input
@@ -341,14 +341,14 @@ export default function HomeOrLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group min-h-[44px]"
+              className="w-full py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 group min-h-[44px]"
             >
               {loading ? (
-                <span>Authenticating & Opening Site...</span>
+                <span>Authenticating Session...</span>
               ) : (
                 <>
                   <span>Sign In & Open Main Site</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </>
               )}
             </button>
@@ -356,7 +356,7 @@ export default function HomeOrLoginPage() {
 
           <div className="pt-2 border-t border-[#EAE1D2] flex items-center justify-between text-xs text-[#7A6C5B]">
             <span>Need an account?</span>
-            <Link href="/register" className="font-bold text-purple-700 hover:text-purple-900 transition-colors">
+            <Link href="/register" className="font-semibold text-stone-900 hover:text-amber-800 transition-colors">
               Register Here
             </Link>
           </div>
@@ -367,58 +367,58 @@ export default function HomeOrLoginPage() {
       <div className="text-center pt-2 px-3">
         <button
           onClick={() => setShowArchitecture(!showArchitecture)}
-          className="inline-flex items-center gap-2 text-xs font-bold text-[#6B5C4D] hover:text-[#231A12] transition-colors p-2"
+          className="inline-flex items-center gap-2 text-xs font-medium text-[#6B5C4D] hover:text-[#231A12] transition-colors p-2"
         >
-          <Cpu className="w-4 h-4 text-purple-600 shrink-0" />
+          <Cpu className="w-4 h-4 text-stone-700 shrink-0" />
           <span>{showArchitecture ? 'Hide Protocol Architecture' : 'View Core 6-Step Verification Workflow'}</span>
         </button>
       </div>
 
       {showArchitecture && (
-        <div className="glass-panel p-5 sm:p-8 rounded-3xl border border-white/90 shadow-glass grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 mx-3 sm:mx-0">
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
-            <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Step 1</span>
-            <h3 className="text-sm font-bold text-[#231A12]">Agreement Synthesis</h3>
-            <p className="text-xs text-[#6B5C4D]">Gemini Pact Architect writes precise acceptance criteria and milestone amounts.</p>
+        <div className="glass-panel p-5 sm:p-7 rounded-2xl border border-[#E8DFD3] shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-3 mx-3 sm:mx-0">
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
+            <span className="text-[10px] font-mono font-bold text-stone-700 uppercase">Step 1</span>
+            <h3 className="text-xs font-bold text-[#231A12]">Agreement Synthesis</h3>
+            <p className="text-[11px] text-[#6B5C4D]">Gemini Pact Architect writes precise acceptance criteria and milestone amounts.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
-            <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Step 2</span>
-            <h3 className="text-sm font-bold text-[#231A12]">Dual Signing</h3>
-            <p className="text-xs text-[#6B5C4D]">Both client and freelancer sign with immutable SHA-256 ledger recording.</p>
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
+            <span className="text-[10px] font-mono font-bold text-stone-700 uppercase">Step 2</span>
+            <h3 className="text-xs font-bold text-[#231A12]">Dual Signing</h3>
+            <p className="text-[11px] text-[#6B5C4D]">Both client and freelancer sign with immutable SHA-256 ledger recording.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
             <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">Step 3</span>
-            <h3 className="text-sm font-bold text-[#231A12]">Deliverables Ingestion</h3>
-            <p className="text-xs text-[#6B5C4D]">Freelancer submits repositories, artifacts, SSRF-validated URLs, and test logs.</p>
+            <h3 className="text-xs font-bold text-[#231A12]">Deliverables Ingestion</h3>
+            <p className="text-[11px] text-[#6B5C4D]">Freelancer submits repositories, artifacts, SSRF-validated URLs, and test logs.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
             <span className="text-[10px] font-mono font-bold text-amber-700 uppercase">Step 4</span>
-            <h3 className="text-sm font-bold text-[#231A12]">Evidence Inspector</h3>
-            <p className="text-xs text-[#6B5C4D]">Gemini audits proof objectively, rejecting fake screenshots for dynamic code.</p>
+            <h3 className="text-xs font-bold text-[#231A12]">Evidence Inspector</h3>
+            <p className="text-[11px] text-[#6B5C4D]">Gemini audits proof objectively, rejecting fake screenshots for dynamic code.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
             <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">Step 5</span>
-            <h3 className="text-sm font-bold text-[#231A12]">Human Approval</h3>
-            <p className="text-xs text-[#6B5C4D]">Client retains sovereign control to approve milestone or request revisions.</p>
+            <h3 className="text-xs font-bold text-[#231A12]">Human Approval</h3>
+            <p className="text-[11px] text-[#6B5C4D]">Client retains sovereign control to approve milestone or request revisions.</p>
           </div>
-          <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] space-y-1.5">
+          <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] space-y-1">
             <span className="text-[10px] font-mono font-bold text-emerald-700 uppercase">Step 6</span>
-            <h3 className="text-sm font-bold text-[#231A12]">PayPal Settlement</h3>
-            <p className="text-xs text-[#6B5C4D]">PayPal Invoicing v2 API generates invoice, finalized by webhook confirmation.</p>
+            <h3 className="text-xs font-bold text-[#231A12]">PayPal Settlement</h3>
+            <p className="text-[11px] text-[#6B5C4D]">PayPal Invoicing v2 API generates invoice, finalized by webhook confirmation.</p>
           </div>
         </div>
       )}
 
       {/* Direct Contact Bar */}
-      <div className="p-4 sm:p-5 rounded-2xl glass-card border border-white/90 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs mx-3 sm:mx-0">
+      <div className="p-4 sm:p-5 rounded-2xl glass-card border border-[#E8DFD3] flex flex-col sm:flex-row items-center justify-between gap-3 text-xs mx-3 sm:mx-0">
         <div className="flex items-center gap-2 text-[#6B5C4D]">
-          <Mail className="w-4 h-4 text-purple-700" />
+          <Mail className="w-4 h-4 text-stone-700" />
           <span>Questions or inquiries? Connect with our team:</span>
         </div>
-        <div className="flex items-center gap-4 font-bold">
+        <div className="flex items-center gap-4 font-semibold">
           <a
             href="mailto:support@pactflow.io"
-            className="text-purple-700 hover:text-purple-900 underline inline-flex items-center gap-1"
+            className="text-stone-900 hover:text-amber-800 underline inline-flex items-center gap-1"
           >
             support@pactflow.io
           </a>

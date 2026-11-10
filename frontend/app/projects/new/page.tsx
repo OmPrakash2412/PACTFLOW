@@ -160,28 +160,28 @@ export default function NewProjectPage() {
           </div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white/70 border border-[#EAE1D2] flex items-center justify-between gap-4">
+        <div className="p-4 rounded-xl bg-white/70 border border-[#EAE1D2] flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center text-purple-700 shrink-0">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center text-stone-800 shrink-0">
+              <Sparkles className="w-4 h-4 text-amber-700" />
             </div>
             <div>
               <span className="text-xs font-bold text-[#231A12] block">Enable Gemini Pact Architect</span>
-              <span className="text-[11px] text-[#6B5C4D] block font-medium">Auto-synthesize contract milestones & acceptance criteria upon creation</span>
+              <span className="text-[11px] text-[#6B5C4D] block font-normal">Auto-synthesize contract milestones & acceptance criteria upon creation</span>
             </div>
           </div>
           <input
             type="checkbox"
             checked={autoDraftAgreement}
             onChange={(e) => setAutoDraftAgreement(e.target.checked)}
-            className="w-5 h-5 accent-purple-600 rounded cursor-pointer shrink-0"
+            className="w-4 h-4 accent-amber-600 rounded cursor-pointer shrink-0"
           />
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-bold shadow-lg shadow-purple-600/20 transition-all flex items-center justify-center gap-2 group min-h-[44px]"
+          className="w-full py-3 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold shadow-sm transition-all flex items-center justify-center gap-2 group min-h-[44px]"
         >
           {loading ? 'Synthesizing with Gemini AI...' : 'Create Project & Generate Milestones'}
         </button>

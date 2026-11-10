@@ -63,15 +63,15 @@ export default function TrustLedgerExplorer() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="text-xs font-mono font-bold text-[#7A6C5B]">TOTAL CHAIN EVENTS</div>
           <div className="text-2xl font-black text-[#231A12] mt-1">{events.length} Sealed Blocks</div>
         </div>
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="text-xs font-mono font-bold text-[#7A6C5B]">GENESIS HASH</div>
           <div className="text-xs font-mono text-[#6B5C4D] truncate mt-2">00000000000000000000000000000000...</div>
         </div>
-        <div className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass">
+        <div className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm">
           <div className="text-xs font-mono font-bold text-[#7A6C5B]">LATEST ROOT HASH</div>
           <div className="text-xs font-mono text-emerald-700 font-bold truncate mt-2">
             {events.length > 0 ? events[events.length - 1].current_hash : 'None'}
@@ -81,7 +81,7 @@ export default function TrustLedgerExplorer() {
 
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-[#231A12] flex items-center gap-2">
-          <Hash className="w-4 h-4 text-purple-700" />
+          <Hash className="w-4 h-4 text-stone-800" />
           Chronological Event Blocks
         </h2>
 
@@ -96,10 +96,10 @@ export default function TrustLedgerExplorer() {
         ) : (
           <div className="space-y-3">
             {events.map((e) => (
-              <div key={e.id} className="glass-card p-5 rounded-2xl border border-white/90 shadow-glass space-y-2 text-xs font-mono">
+              <div key={e.id} className="glass-card p-5 rounded-2xl border border-[#E8DFD3] shadow-sm space-y-2 text-xs font-mono">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="px-2.5 py-0.5 rounded-lg bg-purple-100 text-purple-800 font-bold border border-purple-200">
+                    <span className="px-2.5 py-0.5 rounded-lg bg-stone-100 text-stone-800 font-bold border border-stone-300">
                       BLOCK #{e.sequence_number}
                     </span>
                     <span className="text-[#231A12] font-bold">{e.event_type}</span>
