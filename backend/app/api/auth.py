@@ -1,6 +1,8 @@
 import uuid
+import time
 import datetime
-from fastapi import APIRouter, HTTPException, status, Depends
+from typing import Dict, List
+from fastapi import APIRouter, HTTPException, Request, status, Depends
 from ..schemas.auth import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -13,12 +15,17 @@ from .deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
+# Brute-force login defense tracking: email -> list of timestamps of failed attempts
+_failed_login_attempts: Dict[str, List[float]] = {}
+MAX_FAILED_ATTEMPTS = 5
+LOCKOUT_WINDOW_SECONDS = 900.0  # 15 minutes
+
 
 @router.post("/register", response_model=TokenResponse)
 async def register(req: UserRegisterRequest):
     # Check if email exists
     for p in db_store.profiles.values():
-        if p["email"].lower() == req.email.lower():
+        if p.get("deleted_at") is None and p["email"].lower() == req.email.lower():
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="A user with this email already exists."
@@ -75,19 +82,39 @@ async def register(req: UserRegisterRequest):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(req: UserLoginRequest):
+async def login(req: UserLoginRequest, request: Request):
+    target_key = req.email.lower().strip()
+    now = time.time()
+
+    # Check brute-force lockout window
+    attempts = _failed_login_attempts.setdefault(target_key, [])
+    attempts[:] = [t for t in attempts if now - t < LOCKOUT_WINDOW_SECONDS]
+
+    if len(attempts) >= MAX_FAILED_ATTEMPTS:
+        remaining_lockout = int(LOCKOUT_WINDOW_SECONDS - (now - attempts[0]))
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Account temporarily locked due to excessive failed attempts. Please retry in {max(1, remaining_lockout)} seconds."
+        )
+
     matched_profile = None
     for p in db_store.profiles.values():
-        if p.get("deleted_at") is None and p["email"].lower() == req.email.lower():
+        if p.get("deleted_at") is None and p["email"].lower() == target_key:
             matched_profile = p
             break
 
     if not matched_profile or not verify_password(req.password, matched_profile["password_hash"]):
-        # Generic message protects against user enumeration
+        # Record failed attempt
+        attempts.append(now)
+        # Uniform generic message prevents user account enumeration
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password."
         )
+
+    # Clear failed attempts on successful login
+    if target_key in _failed_login_attempts:
+        del _failed_login_attempts[target_key]
 
     org_id = matched_profile.get("organization_id", "org-alpha-1111")
     token = create_access_token({
@@ -133,7 +160,6 @@ async def export_user_data(current_user: dict = Depends(get_current_user)):
     user_deliverables = [d for d in db_store.deliverables.values() if d.get("submitted_by") == u_id]
     user_invoices = [inv for inv in db_store.invoices.values() if inv.get("client_id") == u_id or inv.get("freelancer_id") == u_id]
 
-    # Sensitive fields redacted
     safe_profile = {k: v for k, v in current_user.items() if k != "password_hash"}
 
     return {

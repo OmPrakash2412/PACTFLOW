@@ -1,9 +1,35 @@
-# Environment
-.env
-.env.local
-.env.*.local
+# ==============================================================================
+# PACTFLOW Ironclad .gitignore
+# Strictly prevents any secrets, credentials, or environment files from being tracked
+# ==============================================================================
 
-# Python
+# --- Environment Files & Secrets (HIGH SECURITY) ---
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+
+# Credentials & Key Pairs
+*.pem
+*.key
+*.crt
+*.cert
+*.pfx
+*.p12
+*.id_rsa
+*.id_ed25519
+credentials.json
+service_account.json
+client_secrets*.json
+secrets.json
+.credentials/
+*.sqlite
+*.sqlite3
+*.db
+dump.rdb
+
+# --- Python & Virtual Environments ---
 __pycache__/
 *.py[cod]
 *$py.class
@@ -31,26 +57,36 @@ wheels/
 .pytest_cache/
 htmlcov/
 .coverage
+.coverage.*
 
-# Node
+# --- Node.js & Next.js ---
 node_modules/
 frontend/node_modules/
+.next/
+out/
+.vercel/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
-.next/
-out/
-.vercel
+lerna-debug.log*
 
-# Operating System
+# --- Operating System & Temporary Files ---
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 desktop.ini
+$RECYCLE.BIN/
 
-# IDEs
+# --- IDEs & Editor State ---
 .idea/
 .vscode/
 *.swp
 *.swo
-
+*~
+*.bak
+*.tmp

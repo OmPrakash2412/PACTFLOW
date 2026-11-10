@@ -19,6 +19,8 @@ def validate_environment() -> Tuple[bool, List[str], List[str]]:
     # 2. JWT Secret strength check
     if len(settings.JWT_SECRET) < 32:
         errors.append("JWT_SECRET must be at least 32 characters long for production security.")
+    if settings.is_production and "hackathon" in settings.JWT_SECRET.lower():
+        errors.append("Production security violation: Default placeholder JWT_SECRET must be replaced with a cryptographically random secret in production.")
 
     # 3. PayPal Configuration Check
     if settings.PAYPAL_ENVIRONMENT.lower() not in ("sandbox", "production", "live"):

@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
     @property
+    def is_production(self) -> bool:
+        return self.ENVIRONMENT.lower() in ("production", "prod")
+
+    @property
     def paypal_base_url(self) -> str:
         if self.PAYPAL_ENVIRONMENT.lower() == "production" or self.PAYPAL_ENVIRONMENT.lower() == "live":
             return self.PAYPAL_LIVE_BASE_URL

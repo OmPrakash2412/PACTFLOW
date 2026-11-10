@@ -139,3 +139,56 @@ async def test_saas_layer10d_data_protection_export_and_deletion():
         assert del_res.status_code == 200
         assert del_res.json()["status"] == "success"
 
+
+def test_advanced_ssrf_validator_defenses():
+    """Security hardening: Verifies advanced SSRF defense barriers."""
+    from app.utils.security_validators import validate_safe_url
+
+    # 1. Embedded credentials in URL
+    safe, msg = validate_safe_url("http://admin:secret@evil.com/payload")
+    assert safe is False
+    assert "userinfo" in msg
+
+    # 2. Decimal encoded loopback IP (2130706433 = 127.0.0.1)
+    safe, msg = validate_safe_url("http://2130706433/internal")
+    assert safe is False
+    assert "non-routable" in msg or "Numeric" in msg
+
+    # 3. Restricted internal infrastructure service port (5432 PostgreSQL, 6379 Redis)
+    safe, msg = validate_safe_url("http://example.com:5432/dump")
+    assert safe is False
+    assert "restricted port" in msg
+
+    safe, msg = validate_safe_url("http://example.com:6379/keys")
+    assert safe is False
+    assert "restricted port" in msg
+
+    # 4. Standard external URLs are permitted
+    safe, msg = validate_safe_url("https://github.com/OmPrakash2412/PACTFLOW")
+    assert safe is True
+
+
+@pytest.mark.asyncio
+async def test_brute_force_login_lockout():
+    """Security hardening: Repeated failed logins trigger brute-force lockout."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        victim_email = f"target_{uuid.uuid4().hex[:6]}@example.com"
+        
+        # 5 failed attempts
+        for _ in range(5):
+            res = await client.post("/api/auth/login", json={
+                "email": victim_email,
+                "password": "WrongPassword!"
+            })
+            assert res.status_code == 401
+
+        # 6th attempt is locked out with 429
+        locked_res = await client.post("/api/auth/login", json={
+            "email": victim_email,
+            "password": "WrongPassword!"
+        })
+        assert locked_res.status_code == 429
+        assert "locked" in locked_res.json()["detail"].lower()
+
+

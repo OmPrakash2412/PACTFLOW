@@ -1,0 +1,12 @@
+# Backend Secrets & Runtime Artifacts
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.db
+*.sqlite3
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage

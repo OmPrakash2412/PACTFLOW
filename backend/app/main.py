@@ -18,12 +18,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger("pactflow")
 
+is_prod = settings.ENVIRONMENT.lower() in ("production", "prod")
+
 app = FastAPI(
     title="PACTFLOW API",
     description="Where Work Meets Trust: AI-Powered Agreement, Deliverable Verification and PayPal Milestone Payment Coordination Platform",
     version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc"
+    docs_url=None if is_prod else "/docs",
+    redoc_url=None if is_prod else "/redoc",
+    openapi_url=None if is_prod else "/openapi.json"
 )
 
 
@@ -34,6 +37,7 @@ _ip_request_history: Dict[str, List[float]] = {}
 RATE_LIMIT_SENSITIVE = 30     # max requests per minute on auth routes
 RATE_LIMIT_STANDARD = 120     # max requests per minute on general API
 WINDOW_SECONDS = 60.0
+MAX_REQUEST_BODY_BYTES = 10 * 1024 * 1024  # 10 MB payload ceiling
 
 SENSITIVE_PREFIXES = ("/api/auth/login", "/api/auth/register", "/api/auth/delete-account")
 
@@ -47,6 +51,19 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 
         if request.url.path in ("/api/health", "/api/health/live", "/health", "/health/live", "/docs", "/redoc", "/openapi.json"):
             return await call_next(request)
+
+        # DoS Defense: Check Content-Length to prevent giant payload memory exhaustion
+        content_length = request.headers.get("content-length")
+        if content_length and content_length.isdigit() and int(content_length) > MAX_REQUEST_BODY_BYTES:
+            return JSONResponse(
+                status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                content={
+                    "error": {
+                        "code": "PAYLOAD_TOO_LARGE",
+                        "message": "Request entity exceeds maximum allowable size (10 MB)."
+                    }
+                }
+            )
 
         client_ip = request.client.host if request.client else "127.0.0.1"
         now = time.time()
@@ -78,7 +95,7 @@ class RateLimitingMiddleware(BaseHTTPMiddleware):
 
 class SecurityAndTracingMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
-        # 1. Request ID Tracing
+        # 1. Request ID Tracing (X-Request-ID)
         request_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
         request.state.request_id = request_id
 
@@ -89,18 +106,27 @@ class SecurityAndTracingMiddleware(BaseHTTPMiddleware):
         # 2. Add Request ID to response headers
         response.headers["X-Request-ID"] = request_id
 
-        # 3. Security Headers (OWASP Top 10 Hardenings)
+        # 3. Server Header Masking (Defense Against OS/Server Fingerprinting)
+        response.headers["Server"] = "PACTFLOW-Protected-Gateway"
+
+        # 4. Rigorous HTTP Security Headers (OWASP Top 10 Hardenings)
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
-        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"
+        response.headers["X-Download-Options"] = "noopen"
+        response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
 
-        # 4. Cache-Control: authenticated API endpoints must never be cached on shared CDNs
+        # 5. Strict Content Security Policy for all API Endpoints
+        if request.url.path.startswith("/api/"):
+            response.headers["Content-Security-Policy"] = "default-src 'none'; frame-ancestors 'none';"
+
+        # 6. Cache-Control: authenticated API endpoints must never be cached on shared proxy CDNs
         if request.url.path.startswith("/api/") and not request.url.path.startswith("/api/health"):
             response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, private"
 
-        # 5. Redacted Structured Request Log
+        # 7. Redacted Structured Request Log (Protects against PII & Secret Leaks)
         log_entry = {
             "request_id": request_id,
             "method": request.method,
