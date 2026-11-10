@@ -33,3 +33,4 @@ PACTFLOW is an AI-powered agreement, deliverable verification, and PayPal milest
 
 ## Architecture Decisions
 See `/docs/decisions/` for the log of Architecture Decision Records (ADRs) and why each choice was made.
+

@@ -26,3 +26,4 @@ We established a **Dual-Acceptance Agreement lifecycle** paired with an **Adviso
   - Empowers clients with instant technical analysis while preserving human authority.
 - **Negative**:
   - Requires fallback heuristics if the LLM provider experiences latency or outages (implemented via deterministic rule-based evaluator).
+

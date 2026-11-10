@@ -34,3 +34,4 @@
 ### 6. Information Leakage in Logs
 - **Threat**: Passwords, bearer tokens, or API secrets written to application logs.
 - **Mitigation**: Structured logging middleware redacts keys named `password`, `token`, `secret`, `authorization`.
+

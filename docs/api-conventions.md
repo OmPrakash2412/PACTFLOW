@@ -50,3 +50,4 @@ All errors returned by the API adhere to the standardized schema:
 ## 5. Webhook Idempotency & Replay Defense
 - PayPal webhooks require event ID tracking in `db_store.paypal_webhook_events`.
 - Replaying the same webhook event ID returns HTTP 200 with `status: "already_processed"` and ignores duplicate side effects.
+

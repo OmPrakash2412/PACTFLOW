@@ -138,3 +138,4 @@ async def test_saas_layer10d_data_protection_export_and_deletion():
         del_res = await client.post("/api/auth/delete-account", headers=headers)
         assert del_res.status_code == 200
         assert del_res.json()["status"] == "success"
+

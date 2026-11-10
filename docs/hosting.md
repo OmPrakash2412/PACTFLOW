@@ -38,3 +38,4 @@
 ## 3. Environment Variables Strategy
 - All secrets are injected through the hosting provider's encrypted environment variables dashboard.
 - The backend validates all required variables at boot via `backend/app/utils/env_validator.py`. If a required key is missing or malformed, the process refuses to start and fails loudly with an actionable error.
+

@@ -44,3 +44,4 @@ The server is the single source of truth. The frontend reflects these permission
 - Every read or write of a tenant resource **must verify that `resource.organization_id == user.organization_id`**.
 - If a user from **Organization A** requests a resource belonging to **Organization B** (even by valid UUID), the backend returns **HTTP 404 Not Found**, never 403 Forbidden or 200 OK.
 - *Reasoning*: Returning 403 confirms the resource exists at that ID. Returning 404 prevents enumeration and information leakage.
+

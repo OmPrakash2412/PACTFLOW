@@ -29,3 +29,4 @@
 | `HIGH_5XX_ERROR_RATE` | 5xx error rate > 2% for 5 min | SEV-1 | PagerDuty / Slack | `/docs/runbooks/incident.md` |
 | `PAYPAL_WEBHOOK_FAILURE` | Webhook signature error count > 5 | SEV-2 | Slack `#alerts-payments` | `/docs/runbooks/incident.md` |
 | `GEMINI_QUOTA_NEARING` | API token usage > 85% daily limit | SEV-3 | Email / Slack | Request quota increase |
+

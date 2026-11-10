@@ -17,3 +17,4 @@ Based on the 15-Layer SaaS Playbook (Appendix B):
 - [x] **Uptime checks and alerts, each with a runbook**: Dual health checks (`/api/health/live` and `/api/health`) linked to operational runbooks.
 - [x] **Load tested at expected launch traffic**: Load testing script at `backend/scripts/load_test.py`.
 - [x] **Terms of service and privacy policy published**: Public footer links with data export and account deletion endpoints compliant with GDPR / DPDP Act.
+

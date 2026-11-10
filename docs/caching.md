@@ -17,3 +17,4 @@ Any application-level cache (e.g. Redis) holding tenant data MUST prefix cache k
 cache:org:{organization_id}:project:{project_id}:agreements
 ```
 This guarantees zero cross-tenant cache bleeding.
+

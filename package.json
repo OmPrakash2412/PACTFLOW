@@ -4,8 +4,9 @@
   "private": true,
   "description": "PACTFLOW - AI-powered agreement, deliverable verification, and PayPal settlement coordination",
   "scripts": {
-    "dev": "npm --prefix frontend run dev",
-    "dv": "npm --prefix frontend run dev",
+    "dev": "node scripts/dev.js",
+    "dv": "node scripts/dev.js",
+    "dev:all": "node scripts/dev.js",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "cd backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "build": "npm --prefix frontend run build",

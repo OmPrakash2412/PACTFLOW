@@ -36,3 +36,4 @@ Our testing pyramid emphasizes fast, deterministic verification with zero mocked
 - **MOCKED (External Network Only)**:
   - Live PayPal HTTP endpoints during offline CI (simulated with realistic JSON fixture payloads).
   - Live Gemini API during CI when `GEMINI_API_KEY` is not present (handled via deterministic rule-based generator).
+

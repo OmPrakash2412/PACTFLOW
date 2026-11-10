@@ -26,3 +26,4 @@ We implemented a **lightweight, tamper-evident Cryptographic Trust Ledger** oper
   - Fully compatible with standard relational and in-memory databases.
 - **Negative**:
   - Chain integrity depends on root genesis and non-repudiation of server signing keys.
+

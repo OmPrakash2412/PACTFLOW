@@ -71,3 +71,4 @@ if __name__ == "__main__":
     url = sys.argv[1] if len(sys.argv) > 1 else "http://localhost:8000"
     success = asyncio.run(run_load_test(url, concurrency=5, requests_per_worker=10))
     sys.exit(0 if success else 1)
+

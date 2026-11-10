@@ -26,3 +26,4 @@ We adopted an **escrowless, milestone-gated payment coordination architecture** 
   - Robust dispute resolution supported directly by PayPal's merchant network.
 - **Negative**:
   - Client must complete a checkout action per milestone rather than an automated escrow release (counterbalanced by instant one-click hosted invoice links).
+

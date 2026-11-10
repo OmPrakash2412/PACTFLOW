@@ -25,3 +25,4 @@ We chose a **decoupled modular monolith** architecture:
 - **Negative**:
   - Two distinct runtimes to manage locally (Node.js and Python).
   - Requires maintaining CORS and API schemas across boundaries (mitigated by Pydantic and TypeScript types).
+
