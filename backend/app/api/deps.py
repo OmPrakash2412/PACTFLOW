@@ -35,5 +35,7 @@ async def get_current_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Authenticated user profile not found."
         )
+    if "organization_id" not in user and "organization_id" in payload:
+        user["organization_id"] = payload["organization_id"]
     return user
 

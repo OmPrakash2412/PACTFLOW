@@ -7,6 +7,7 @@ class UserRegisterRequest(BaseModel):
     password: str
     full_name: str
     role: str = "client"  # "client", "freelancer", "admin"
+    organization_id: Optional[str] = None
     paypal_email: Optional[str] = None
 
 
@@ -20,6 +21,7 @@ class UserResponse(BaseModel):
     email: str
     full_name: str
     role: str
+    organization_id: Optional[str] = None
     paypal_email: Optional[str] = None
     avatar_url: Optional[str] = None
     created_at: str

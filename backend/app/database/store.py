@@ -13,6 +13,8 @@ class InMemoryDataStore:
     foreign key validation, seed data, and cryptographic Trust Ledger chain.
     """
     def __init__(self):
+        self.organizations: Dict[str, Dict[str, Any]] = {}
+        self.organization_members: Dict[str, Dict[str, Any]] = {}
         self.profiles: Dict[str, Dict[str, Any]] = {}
         self.projects: Dict[str, Dict[str, Any]] = {}
         self.project_members: Dict[str, Dict[str, Any]] = {}
@@ -38,8 +40,33 @@ class InMemoryDataStore:
 
         seed_hash = "$2b$10$J6j7Bd.wQZ1JJnlixocnVOyN5AlCxgLxEqQ4wxCtIa4Ik.WQyc86m"  # 'password123'
 
+        # Seed Organizations
+        org_alpha = "org-alpha-1111"
+        org_beta = "org-beta-2222"
+
+        self.organizations[org_alpha] = {
+            "id": org_alpha,
+            "name": "Alpha Studio Ventures",
+            "slug": "alpha-studio",
+            "owner_id": client_id,
+            "created_at": self._now_iso(),
+            "updated_at": self._now_iso(),
+            "deleted_at": None
+        }
+
+        self.organizations[org_beta] = {
+            "id": org_beta,
+            "name": "Beta Nexus Technologies",
+            "slug": "beta-nexus",
+            "owner_id": "44444444-4444-4444-8444-444444444444",
+            "created_at": self._now_iso(),
+            "updated_at": self._now_iso(),
+            "deleted_at": None
+        }
+
         self.profiles[client_id] = {
             "id": client_id,
+            "organization_id": org_alpha,
             "email": "client@pactflow.io",
             "password_hash": seed_hash,
             "full_name": "Sophia Vance",
@@ -47,11 +74,13 @@ class InMemoryDataStore:
             "paypal_email": "sb-svance-client@business.example.com",
             "avatar_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=256&q=80",
             "created_at": self._now_iso(),
-            "updated_at": self._now_iso()
+            "updated_at": self._now_iso(),
+            "deleted_at": None
         }
 
         self.profiles[freelancer_id] = {
             "id": freelancer_id,
+            "organization_id": org_alpha,
             "email": "freelancer@pactflow.io",
             "password_hash": seed_hash,
             "full_name": "Alex Rivera",
@@ -59,11 +88,13 @@ class InMemoryDataStore:
             "paypal_email": "sb-arivera-freelancer@personal.example.com",
             "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80",
             "created_at": self._now_iso(),
-            "updated_at": self._now_iso()
+            "updated_at": self._now_iso(),
+            "deleted_at": None
         }
 
         self.profiles[admin_id] = {
             "id": admin_id,
+            "organization_id": org_alpha,
             "email": "admin@pactflow.io",
             "password_hash": seed_hash,
             "full_name": "Elena Rostova",
@@ -71,12 +102,30 @@ class InMemoryDataStore:
             "paypal_email": "admin@pactflow.io",
             "avatar_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=256&q=80",
             "created_at": self._now_iso(),
-            "updated_at": self._now_iso()
+            "updated_at": self._now_iso(),
+            "deleted_at": None
+        }
+
+        # Beta Organization User for Tenant Isolation Testing
+        beta_client_id = "44444444-4444-4444-8444-444444444444"
+        self.profiles[beta_client_id] = {
+            "id": beta_client_id,
+            "organization_id": org_beta,
+            "email": "owner@betanexus.io",
+            "password_hash": seed_hash,
+            "full_name": "Marcus Brody",
+            "role": "client",
+            "paypal_email": "sb-mbrody-beta@business.example.com",
+            "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=256&q=80",
+            "created_at": self._now_iso(),
+            "updated_at": self._now_iso(),
+            "deleted_at": None
         }
 
         proj_id = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
         self.projects[proj_id] = {
             "id": proj_id,
+            "organization_id": org_alpha,
             "client_id": client_id,
             "title": "PulseAnalytics AI Financial Engine",
             "description": "Full architecture overhaul and implementation of real-time streaming financial intelligence with Gemini 2.0 and automated PayPal invoicing.",
@@ -85,7 +134,25 @@ class InMemoryDataStore:
             "deadline": "2026-12-31T23:59:59Z",
             "status": "active",
             "created_at": self._now_iso(),
-            "updated_at": self._now_iso()
+            "updated_at": self._now_iso(),
+            "deleted_at": None
+        }
+
+        # Beta Organization Project for cross-tenant isolation testing
+        proj_beta_id = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+        self.projects[proj_beta_id] = {
+            "id": proj_beta_id,
+            "organization_id": org_beta,
+            "client_id": beta_client_id,
+            "title": "Nexus Quantum Cryptography Protocol",
+            "description": "High-security post-quantum data vault for enterprise clients.",
+            "budget": Decimal("12000.00"),
+            "currency": "USD",
+            "deadline": "2027-01-31T23:59:59Z",
+            "status": "active",
+            "created_at": self._now_iso(),
+            "updated_at": self._now_iso(),
+            "deleted_at": None
         }
 
         self.project_members["pm1"] = {
